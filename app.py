@@ -835,7 +835,7 @@ st.markdown(f"""
     # ── Artists you'd vibe with — reads from persona.artists list
 st.markdown('<div class="section-title">🎤 Artists you\'d vibe with</div>', unsafe_allow_html=True)
     # for loop: build artist chips from persona.artists list
-    artists_html = "".join([
+artists_html = "".join([
         f'<span class="artist-chip">♪ {a}</span>' for a in persona.artists
     ])
 st.markdown(f'<div style="text-align:center;">{artists_html}</div>', unsafe_allow_html=True)
