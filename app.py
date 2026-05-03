@@ -810,7 +810,7 @@ st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=
 st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
 st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>', unsafe_allow_html=True)
 
-    st.markdown(f"""
+st.markdown(f"""
     <div style="background:linear-gradient(145deg,#0f0c29,{persona.color}55,#0f0c29);border:2px solid {persona.color}88;border-radius:24px;padding:2.5rem 2rem;text-align:center;max-width:420px;margin:0 auto;">
         <div style="font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:{persona.color};margin-bottom:1rem;font-weight:600;">Your Life as a Playlist</div>
         <div style="font-size:4rem;margin-bottom:0.5rem;">{persona.emoji}</div>
