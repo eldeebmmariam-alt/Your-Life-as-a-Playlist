@@ -630,7 +630,7 @@ if st.session_state.step == "intro":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-st.markdown("""
+    st.markdown("""
     <div style="text-align:center;margin-bottom:1.5rem;">
         <span style="font-size:1rem;color:rgba(255,255,255,0.38);letter-spacing:0.05em;font-style:italic;">
             We'll reveal your music identity at the end.
