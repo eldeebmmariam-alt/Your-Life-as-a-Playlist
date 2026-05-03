@@ -524,7 +524,33 @@ def get_data():
     return load_artist_data("database_artists.xlsx")
 
 data = get_data()
+# ── FIX: Artist input text readability ────────────────────────────────────────
+st.markdown("""
+<style>
+/* Make artist input boxes readable */
+div[data-baseweb="input"] {
+    background-color: #f2f2f7 !important;
+    border-radius: 12px !important;
+}
 
+div[data-baseweb="input"] > div {
+    background-color: #f2f2f7 !important;
+    border-radius: 12px !important;
+}
+
+div[data-baseweb="input"] input {
+    color: #1f1f2e !important;
+    -webkit-text-fill-color: #1f1f2e !important;
+    caret-color: #1f1f2e !important;
+    background-color: #f2f2f7 !important;
+}
+
+div[data-baseweb="input"] input::placeholder {
+    color: rgba(31,31,46,0.45) !important;
+    -webkit-text-fill-color: rgba(31,31,46,0.45) !important;
+}
+</style>
+""", unsafe_allow_html=True)
 # ═══════════════════════════════════════════════════════════════
 # STEP 1 — ARTIST INPUT
 # ═══════════════════════════════════════════════════════════════
@@ -536,7 +562,7 @@ if st.session_state.step == "artists":
 
     st.markdown("""
     <div class="question-card">
-        <div class="question-text">Who do you actually listen to?</div>
+        <div class="question-text">Which artists define your soundtrack?</div>
     </div>
     """, unsafe_allow_html=True)
 
