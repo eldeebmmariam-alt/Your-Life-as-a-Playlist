@@ -833,19 +833,19 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
     # ── Artists you'd vibe with — reads from persona.artists list
-    st.markdown('<div class="section-title">🎤 Artists you\'d vibe with</div>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">🎤 Artists you\'d vibe with</div>', unsafe_allow_html=True)
     # for loop: build artist chips from persona.artists list
     artists_html = "".join([
         f'<span class="artist-chip">♪ {a}</span>' for a in persona.artists
     ])
-    st.markdown(f'<div style="text-align:center;">{artists_html}</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="text-align:center;">{artists_html}</div>', unsafe_allow_html=True)
 
     # ── Copy text — uses persona.get_share_text() method ───────
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.code(persona.get_share_text(), language=None)
-    st.markdown('<p style="font-size:0.8rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:-0.5rem;">↑ Copy this to share your result in chats</p>', unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
+st.code(persona.get_share_text(), language=None)
+st.markdown('<p style="font-size:0.8rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:-0.5rem;">↑ Copy this to share your result in chats</p>', unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 Take it again", use_container_width=True):
         restart()
         st.rerun()
