@@ -805,7 +805,7 @@ elif st.session_state.step == "quiz":
     """, unsafe_allow_html=True)
 
     for i, (option_text, p1, p2) in enumerate(q["options"]):
-    if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
+        if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
         st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
         st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
 
