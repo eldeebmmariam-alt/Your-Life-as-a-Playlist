@@ -94,9 +94,7 @@ def get_persona_from_profile(profile):
     else:
         return "The Free Spirit"
 
-def format_result(persona, profile):
-    energy = profile["energy"]
-    emotionality = profile["emotionality"]
+def format_result(persona):
     descriptions = {
         "The Life of the Party": "You are the person everyone wants at their playlist. Music is not just something you listen to — it is something you perform.",
         "The Rebel":             "You do not follow trends, you ignore them. Your music taste is your identity and you wear it like armour.",
@@ -108,16 +106,7 @@ def format_result(persona, profile):
         "The Hype Machine":      "Good vibes only. Your playlist exists to get people moving and keep the energy high.",
         "The Free Spirit":       "You resist categories. Your music is as unpredictable and interesting as you are.",
     }
-    base = descriptions.get(persona, "Your music taste is uniquely yours.")
-    if energy >= 8:
-        extra = " Your energy levels are off the charts."
-    elif emotionality >= 8:
-        extra = " You feel everything very deeply."
-    elif energy <= 3:
-        extra = " You appreciate the quiet and the slow burn."
-    else:
-        extra = " You have a balanced and open approach to music."
-    return base + extra
+    return descriptions.get(persona, "Your music taste is uniquely yours.")
 
 # ============================================================
 # PERSON 4 — CLASS + STREAMLIT UI
@@ -245,25 +234,20 @@ QUIZ_QUESTIONS = [
     },
 ]
 
-def get_persona_from_quiz(scores):
-    if not scores:
-        return "The Free Spirit"
-    return max(scores, key=scores.get)
-
-def display_result(persona_name):
-    details = PERSONA_DETAILS.get(persona_name, {
-        "emoji": "🎵", "anthem": "Unknown", "traits": []
-    })
-    st.markdown("---")
-    st.markdown(f"## {details['emoji']} {persona_name}")
-    st.markdown(f"*{details['anthem']}*")
-    cols = st.columns(3)
-    for i, trait in enumerate(details["traits"]):
-        cols[i].metric("", trait)
-
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Your Life as a Playlist", page_icon="🎵", layout="centered")
-st.title("🎵 Your Life as a Playlist")
+
+# ── Session state init ────────────────────────────────────────────────────────
+if "step" not in st.session_state:
+    st.session_state.step = "artists"       # artists → quiz → result
+if "artist_scores" not in st.session_state:
+    st.session_state.artist_scores = {}     # persona → points from artists
+if "quiz_scores" not in st.session_state:
+    st.session_state.quiz_scores = {}       # persona → points from quiz
+if "quiz_step" not in st.session_state:
+    st.session_state.quiz_step = 0
+if "artist_names_found" not in st.session_state:
+    st.session_state.artist_names_found = []
 
 # ── Load data ─────────────────────────────────────────────────────────────────
 @st.cache_data
@@ -272,18 +256,67 @@ def get_data():
 
 data = get_data()
 
-# ── Tabs ──────────────────────────────────────────────────────────────────────
-tab1, tab2 = st.tabs(["🎤 Artist Quiz", "❓ Personality Quiz"])
+# ── Helper: map profile scores to persona points ──────────────────────────────
+PERSONA_LIST = list(PERSONA_DETAILS.keys())
 
-# ── TAB 1: ARTIST INPUT ───────────────────────────────────────────────────────
-with tab1:
-    st.markdown("Enter up to 3 of your favorite artists and discover your music persona.")
+def profile_to_scores(profile):
+    """Convert energy/extroversion/emotionality profile into persona point scores."""
+    scores = {p: 0 for p in PERSONA_LIST}
+    e  = profile["energy"]
+    ex = profile["extroversion"]
+    em = profile["emotionality"]
+
+    if e >= 7 and ex >= 7:   scores["The Life of the Party"] += 3
+    if e >= 7 and ex < 4:    scores["The Rebel"] += 3
+    if em >= 7 and ex < 4:   scores["The Overthinker"] += 3
+    if em >= 7 and ex >= 5:  scores["The Romantic"] += 3
+    if e >= 5 and ex >= 5 and em >= 5: scores["The All-Rounder"] += 3
+    if e < 4 and ex < 4:     scores["The Lone Wolf"] += 3
+    if ex >= 7 and em >= 5:  scores["The Empath"] += 3
+    if e >= 5 and em < 4:    scores["The Hype Machine"] += 3
+
+    # Softer contributions for partial matches
+    scores["The Life of the Party"] += e * 0.3 + ex * 0.3
+    scores["The Rebel"]             += e * 0.4
+    scores["The Overthinker"]       += em * 0.3
+    scores["The Romantic"]          += em * 0.4
+    scores["The Lone Wolf"]         += (9 - ex) * 0.2
+    scores["The Empath"]            += em * 0.2 + ex * 0.2
+    scores["The Hype Machine"]      += e * 0.3
+    scores["The Free Spirit"]       += 1
+
+    return scores
+
+def merge_and_decide(artist_scores, quiz_scores):
+    """Merge artist scores (weight 40%) and quiz scores (weight 60%)."""
+    all_personas = set(list(artist_scores.keys()) + list(quiz_scores.keys()))
+    final = {}
+    for p in all_personas:
+        a = artist_scores.get(p, 0)
+        q = quiz_scores.get(p, 0)
+        final[p] = (a * 0.4) + (q * 0.6)
+    return max(final, key=final.get)
+
+def restart():
+    st.session_state.step = "artists"
+    st.session_state.artist_scores = {}
+    st.session_state.quiz_scores = {}
+    st.session_state.quiz_step = 0
+    st.session_state.artist_names_found = []
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 1 — ARTIST INPUT
+# ═══════════════════════════════════════════════════════════════
+if st.session_state.step == "artists":
+    st.title("🎵 Your Life as a Playlist")
+    st.markdown("### Step 1 of 2 — Tell us who you listen to")
+    st.markdown("Enter up to 3 of your favorite artists to seed your music profile.")
 
     artist1 = st.text_input("Favorite artist #1", placeholder="e.g. Taylor Swift")
     artist2 = st.text_input("Favorite artist #2 (optional)", placeholder="e.g. Kendrick Lamar")
     artist3 = st.text_input("Favorite artist #3 (optional)", placeholder="e.g. Adele")
 
-    if st.button("Find my persona 🎵", key="artist_btn"):
+    if st.button("Next — Take the quiz →", key="artist_next"):
         artists = [a for a in [artist1, artist2, artist3] if a.strip()]
         if not artists:
             st.warning("Please enter at least one artist.")
@@ -292,59 +325,72 @@ with tab1:
             if found == 0:
                 st.error("None of those artists were found. Try checking the spelling.")
             else:
-                persona_name = get_persona_from_profile(profile)
-                description = format_result(persona_name, profile)
-                details = PERSONA_DETAILS.get(persona_name, {
-                    "emoji": "🎵", "anthem": "Unknown", "traits": []
-                })
-                st.markdown("---")
-                st.markdown(f"## {details['emoji']} {persona_name}")
-                st.markdown(description)
-                st.markdown(f"**Your anthem:** *{details['anthem']}*")
-                st.markdown("**Your traits:** " + " · ".join(details["traits"]))
-
-# ── TAB 2: PERSONALITY QUIZ ───────────────────────────────────────────────────
-with tab2:
-    st.markdown("Answer 7 questions and find out which music persona you are.")
-
-    if "quiz_scores" not in st.session_state:
-        st.session_state.quiz_scores = {}
-    if "quiz_step" not in st.session_state:
-        st.session_state.quiz_step = 0
-    if "quiz_done" not in st.session_state:
-        st.session_state.quiz_done = False
-
-    if st.button("Start over 🔄", key="reset_btn"):
-        st.session_state.quiz_scores = {}
-        st.session_state.quiz_step = 0
-        st.session_state.quiz_done = False
-
-    if st.session_state.quiz_done:
-        persona_name = get_persona_from_quiz(st.session_state.quiz_scores)
-        details = PERSONA_DETAILS.get(persona_name, {
-            "emoji": "🎵", "anthem": "Unknown", "traits": []
-        })
-        description = format_result(persona_name, {"energy": 5, "extroversion": 5, "emotionality": 5})
-        st.markdown("---")
-        st.markdown(f"## {details['emoji']} {persona_name}")
-        st.markdown(description)
-        st.markdown(f"**Your anthem:** *{details['anthem']}*")
-        st.markdown("**Your traits:** " + " · ".join(details["traits"]))
-
-    elif st.session_state.quiz_step < len(QUIZ_QUESTIONS):
-        q_idx = st.session_state.quiz_step
-        q = QUIZ_QUESTIONS[q_idx]
-
-        st.markdown(f"**Question {q_idx + 1} of {len(QUIZ_QUESTIONS)}**")
-        st.progress((q_idx) / len(QUIZ_QUESTIONS))
-        st.markdown(f"### {q['question']}")
-
-        for i, (option_text, p1, p2) in enumerate(q["options"]):
-            if st.button(option_text, key=f"q{q_idx}_opt{i}"):
-                st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
-                st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
-                if q_idx + 1 >= len(QUIZ_QUESTIONS):
-                    st.session_state.quiz_done = True
-                else:
-                    st.session_state.quiz_step += 1
+                st.session_state.artist_scores = profile_to_scores(profile)
+                st.session_state.artist_names_found = artists
+                st.session_state.step = "quiz"
                 st.rerun()
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 2 — QUIZ
+# ═══════════════════════════════════════════════════════════════
+elif st.session_state.step == "quiz":
+    q_idx = st.session_state.quiz_step
+    total = len(QUIZ_QUESTIONS)
+
+    st.title("🎵 Your Life as a Playlist")
+    st.markdown(f"### Step 2 of 2 — Question {q_idx + 1} of {total}")
+    st.progress((q_idx) / total)
+
+    q = QUIZ_QUESTIONS[q_idx]
+    st.markdown(f"## {q['question']}")
+    st.markdown("")
+
+    for i, (option_text, p1, p2) in enumerate(q["options"]):
+        if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
+            st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
+            st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
+            if q_idx + 1 >= total:
+                st.session_state.step = "result"
+            else:
+                st.session_state.quiz_step += 1
+            st.rerun()
+
+    st.markdown("---")
+    if st.button("← Start over", key="back_btn"):
+        restart()
+        st.rerun()
+
+# ═══════════════════════════════════════════════════════════════
+# STEP 3 — RESULT
+# ═══════════════════════════════════════════════════════════════
+elif st.session_state.step == "result":
+    persona_name = merge_and_decide(
+        st.session_state.artist_scores,
+        st.session_state.quiz_scores
+    )
+    details = PERSONA_DETAILS.get(persona_name, {
+        "emoji": "🎵", "anthem": "Unknown", "traits": []
+    })
+    description = format_result(persona_name)
+
+    st.title("🎵 Your Life as a Playlist")
+    st.markdown("### Your music identity")
+    st.markdown("---")
+
+    st.markdown(f"# {details['emoji']} {persona_name}")
+    st.markdown(f"> {description}")
+    st.markdown(f"**Your anthem:** *{details['anthem']}*")
+    st.markdown("")
+
+    cols = st.columns(3)
+    for i, trait in enumerate(details["traits"]):
+        cols[i].info(trait)
+
+    if st.session_state.artist_names_found:
+        st.markdown("---")
+        st.markdown(f"*Based on your artists: {', '.join(st.session_state.artist_names_found)} — combined with your quiz answers.*")
+
+    st.markdown("")
+    if st.button("Take it again 🔄", key="restart_btn", use_container_width=True):
+        restart()
+        st.rerun()
