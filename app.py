@@ -520,7 +520,7 @@ def render_persona_effect(persona_id):
             position: absolute;
             bottom: -80px;
             font-size: 2rem;
-            opacity: 0.45;
+            opacity: 0.65;
             animation: chillFloatUp 10s linear infinite;
         }
 
@@ -540,7 +540,7 @@ def render_persona_effect(persona_id):
                 opacity: 0;
             }
             15% {
-                opacity: 0.45;
+                opacity: 0.65;
             }
             50% {
                 transform: translateY(-50vh) translateX(25px) rotate(12deg) scale(1);
@@ -607,7 +607,7 @@ def render_persona_effect(persona_id):
             }
             45% {
                 transform: translateY(-45vh) translateX(35px) rotate(25deg) scale(1);
-                opacity: 0.45;
+                opacity: 0.65;
             }
             100% {
                 transform: translateY(-115vh) translateX(-30px) rotate(70deg) scale(1.2);
