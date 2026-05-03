@@ -804,7 +804,23 @@ elif st.session_state.step == "result":
     if persona.artist_sources:
         artist_note = f'<p style="opacity:0.6;font-size:0.82rem;margin-top:1.2rem;">Based on: {", ".join(persona.artist_sources)} — combined with your quiz answers.</p>'
 
-    st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
+
+    # ── Shareable card — shown first ───────────────────────────
+    st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>', unsafe_allow_html=True)
+
+    st.markdown(f"""
+    <div style="background:linear-gradient(145deg,#0f0c29,{persona.color}55,#0f0c29);border:2px solid {persona.color}88;border-radius:24px;padding:2.5rem 2rem;text-align:center;max-width:420px;margin:0 auto;">
+        <div style="font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:{persona.color};margin-bottom:1rem;font-weight:600;">Your Life as a Playlist</div>
+        <div style="font-size:4rem;margin-bottom:0.5rem;">{persona.emoji}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:{persona.color};margin-bottom:0.75rem;line-height:1.2;">{persona.name}</div>
+        <div style="font-size:0.85rem;color:rgba(255,255,255,0.75);line-height:1.65;margin-bottom:1.25rem;padding:0 0.5rem;">{persona.description[:120]}...</div>
+        <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:{persona.color};">🎶 <strong>{persona.anthem}</strong></div>
+        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">{persona.get_traits_string()}</div>
+        <div style="margin-top:1rem;font-size:0.7rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;">yourlifeasaplaylist.streamlit.app</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     # ── Music DNA — reads from persona.dna dictionary ──────────
     st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
@@ -823,22 +839,6 @@ elif st.session_state.step == "result":
         f'<span class="artist-chip">♪ {a}</span>' for a in persona.artists
     ])
     st.markdown(f'<div style="text-align:center;">{artists_html}</div>', unsafe_allow_html=True)
-
-    # ── Shareable card ─────────────────────────────────────────
-    st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>', unsafe_allow_html=True)
-
-    st.markdown(f"""
-    <div style="background:linear-gradient(145deg,#0f0c29,{persona.color}55,#0f0c29);border:2px solid {persona.color}88;border-radius:24px;padding:2.5rem 2rem;text-align:center;max-width:420px;margin:0 auto;">
-        <div style="font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:{persona.color};margin-bottom:1rem;font-weight:600;">Your Life as a Playlist</div>
-        <div style="font-size:4rem;margin-bottom:0.5rem;">{persona.emoji}</div>
-        <div style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:{persona.color};margin-bottom:0.75rem;line-height:1.2;">{persona.name}</div>
-        <div style="font-size:0.85rem;color:rgba(255,255,255,0.75);line-height:1.65;margin-bottom:1.25rem;padding:0 0.5rem;">{persona.description[:120]}...</div>
-        <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:{persona.color};">🎶 <strong>{persona.anthem}</strong></div>
-        <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">{persona.get_traits_string()}</div>
-        <div style="margin-top:1rem;font-size:0.7rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;">yourlifeasaplaylist.streamlit.app</div>
-    </div>
-    """, unsafe_allow_html=True)
 
     # ── Copy text — uses persona.get_share_text() method ───────
     st.markdown("<br>", unsafe_allow_html=True)
