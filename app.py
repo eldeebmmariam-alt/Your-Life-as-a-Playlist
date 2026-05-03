@@ -503,6 +503,69 @@ def render_persona_effect(persona_id):
         </div>
         """, unsafe_allow_html=True)
 
+    elif persona_id == "the-chill-soul":
+        st.markdown("""
+        <style>
+        .persona-animation-layer {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .chill-particle {
+            position: absolute;
+            bottom: -80px;
+            font-size: 2rem;
+            opacity: 0.45;
+            animation: chillFloatUp 10s linear infinite;
+        }
+
+        .chill-particle:nth-child(1) { left: 8%; animation-delay: 0s; animation-duration: 11s; }
+        .chill-particle:nth-child(2) { left: 18%; animation-delay: 1s; animation-duration: 13s; }
+        .chill-particle:nth-child(3) { left: 30%; animation-delay: 2s; animation-duration: 10s; }
+        .chill-particle:nth-child(4) { left: 42%; animation-delay: 3s; animation-duration: 12s; }
+        .chill-particle:nth-child(5) { left: 55%; animation-delay: 1.5s; animation-duration: 14s; }
+        .chill-particle:nth-child(6) { left: 67%; animation-delay: 2.5s; animation-duration: 11s; }
+        .chill-particle:nth-child(7) { left: 78%; animation-delay: 4s; animation-duration: 13s; }
+        .chill-particle:nth-child(8) { left: 88%; animation-delay: 5s; animation-duration: 10s; }
+        .chill-particle:nth-child(9) { left: 95%; animation-delay: 3.5s; animation-duration: 12s; }
+
+        @keyframes chillFloatUp {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(0.8);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.45;
+            }
+            50% {
+                transform: translateY(-50vh) translateX(25px) rotate(12deg) scale(1);
+                opacity: 0.35;
+            }
+            100% {
+                transform: translateY(-115vh) translateX(-20px) rotate(-12deg) scale(1.15);
+                opacity: 0;
+            }
+        }
+        </style>
+
+        <div class="persona-animation-layer">
+            <div class="chill-particle">🍃</div>
+            <div class="chill-particle">☕</div>
+            <div class="chill-particle">✨</div>
+            <div class="chill-particle">🍃</div>
+            <div class="chill-particle">🌿</div>
+            <div class="chill-particle">✨</div>
+            <div class="chill-particle">☕</div>
+            <div class="chill-particle">🍃</div>
+            <div class="chill-particle">✨</div>
+        </div>
+        """, unsafe_allow_html=True)
+
 def trigger_persona_celebration(persona_id):
     # One-time celebration effect
     if persona_id == "the-life-of-the-party":
