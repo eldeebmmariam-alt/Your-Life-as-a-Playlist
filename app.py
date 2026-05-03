@@ -419,17 +419,29 @@ p, label, .stMarkdown { color: #e0e0e0 !important; }
     transform: translateX(5px) !important;
 }
 
-.stTextInput > div > div > input {
-    background: rgba(255,255,255,0.07) !important;
+/* Text input styling */
+div[data-baseweb="input"] > div {
+    background: rgba(255,255,255,0.08) !important;
     border: 1px solid rgba(255,255,255,0.18) !important;
     border-radius: 12px !important;
-    color: white !important;
-    font-size: 1rem !important;
-    padding: 0.75rem 1rem !important;
 }
 
-.stTextInput > div > div > input::placeholder { color: rgba(255,255,255,0.3) !important; }
-.stTextInput > label { color: #c0c0e0 !important; font-size: 0.9rem !important; }
+div[data-baseweb="input"] input {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    caret-color: #ffffff !important;
+    background: transparent !important;
+    font-size: 1rem !important;
+}
+
+div[data-baseweb="input"] input::placeholder {
+    color: rgba(255,255,255,0.45) !important;
+}
+
+.stTextInput > label {
+    color: #c0c0e0 !important;
+    font-size: 0.9rem !important;
+}
 
 .result-card {
     border-radius: 24px;
@@ -584,7 +596,7 @@ elif st.session_state.step == "quiz":
     """, unsafe_allow_html=True)
 
     for i, (option_text, p1, p2) in enumerate(q["options"]):
-        if st.button(option_text, key=f"q{q_idx}_opt{i}"):
+        if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
             st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
             st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
             if q_idx + 1 >= total:
