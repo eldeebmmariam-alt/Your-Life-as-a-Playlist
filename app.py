@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 
 # ============================================================
 # PERSON 1 — DATA LOADING
@@ -322,6 +323,186 @@ def restart():
     st.session_state.artist_names_found = []
     st.session_state.celebrated = False
 
+def show_result_loading():
+    placeholder = st.empty()
+    messages = [
+        "🎧 Analyzing your artists...",
+        "✨ Reading your playlist energy...",
+        "🎼 Matching your music personality...",
+        "💿 Building your result..."
+    ]
+
+    for msg in messages:
+        placeholder.markdown(
+            f"""
+            <div style="
+                text-align:center;
+                color:#e8e6ff;
+                font-size:1.1rem;
+                margin-top:1rem;
+                margin-bottom:1rem;
+                opacity:0.95;
+            ">
+                {msg}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+        time.sleep(0.7)
+
+    placeholder.empty()
+
+def render_persona_effect(persona_id):
+    if persona_id == "the-daydreamer":
+        st.markdown("""
+        <style>
+        .floating-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .float-item {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.22;
+            animation: driftCloud 18s linear infinite;
+        }
+        .float-item:nth-child(1) { top: 10%; left: -10%; animation-delay: 0s; }
+        .float-item:nth-child(2) { top: 28%; left: -15%; animation-delay: 4s; }
+        .float-item:nth-child(3) { top: 52%; left: -12%; animation-delay: 8s; }
+        .float-item:nth-child(4) { top: 72%; left: -18%; animation-delay: 12s; }
+
+        @keyframes driftCloud {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(120vw); }
+        }
+        </style>
+
+        <div class="floating-bg">
+            <div class="float-item">☁️</div>
+            <div class="float-item">☁️</div>
+            <div class="float-item">✨</div>
+            <div class="float-item">☁️</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-romantic":
+        st.markdown("""
+        <style>
+        .floating-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .float-item {
+            position: absolute;
+            bottom: -10%;
+            font-size: 1.8rem;
+            opacity: 0.28;
+            animation: floatUp 11s linear infinite;
+        }
+        .float-item:nth-child(1) { left: 8%; animation-delay: 0s; }
+        .float-item:nth-child(2) { left: 24%; animation-delay: 2s; }
+        .float-item:nth-child(3) { left: 46%; animation-delay: 4s; }
+        .float-item:nth-child(4) { left: 68%; animation-delay: 6s; }
+        .float-item:nth-child(5) { left: 86%; animation-delay: 8s; }
+
+        @keyframes floatUp {
+            0%   { transform: translateY(0) scale(1); opacity: 0; }
+            15%  { opacity: 0.28; }
+            100% { transform: translateY(-115vh) scale(1.18); opacity: 0; }
+        }
+        </style>
+
+        <div class="floating-bg">
+            <div class="float-item">💖</div>
+            <div class="float-item">🦋</div>
+            <div class="float-item">💕</div>
+            <div class="float-item">🦋</div>
+            <div class="float-item">💗</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-life-of-the-party":
+        st.markdown("""
+        <style>
+        .floating-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .float-item {
+            position: absolute;
+            top: -10%;
+            font-size: 1.5rem;
+            opacity: 0.22;
+            animation: fallDown 9s linear infinite;
+        }
+        .float-item:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .float-item:nth-child(2) { left: 25%; animation-delay: 1.5s; }
+        .float-item:nth-child(3) { left: 45%; animation-delay: 3s; }
+        .float-item:nth-child(4) { left: 65%; animation-delay: 4.5s; }
+        .float-item:nth-child(5) { left: 85%; animation-delay: 6s; }
+
+        @keyframes fallDown {
+            0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10%  { opacity: 0.22; }
+            100% { transform: translateY(115vh) rotate(360deg); opacity: 0; }
+        }
+        </style>
+
+        <div class="floating-bg">
+            <div class="float-item">🎉</div>
+            <div class="float-item">✨</div>
+            <div class="float-item">🎊</div>
+            <div class="float-item">✨</div>
+            <div class="float-item">🎉</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-main-character":
+        st.markdown("""
+        <style>
+        .floating-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .float-item {
+            position: absolute;
+            font-size: 1.7rem;
+            opacity: 0.20;
+            animation: twinkle 5s ease-in-out infinite;
+        }
+        .float-item:nth-child(1) { top: 12%; left: 15%; animation-delay: 0s; }
+        .float-item:nth-child(2) { top: 20%; left: 75%; animation-delay: 1s; }
+        .float-item:nth-child(3) { top: 45%; left: 20%; animation-delay: 2s; }
+        .float-item:nth-child(4) { top: 60%; left: 82%; animation-delay: 3s; }
+        .float-item:nth-child(5) { top: 78%; left: 50%; animation-delay: 4s; }
+
+        @keyframes twinkle {
+            0%, 100% { transform: scale(0.9); opacity: 0.10; }
+            50%      { transform: scale(1.25); opacity: 0.28; }
+        }
+        </style>
+
+        <div class="floating-bg">
+            <div class="float-item">⭐</div>
+            <div class="float-item">✨</div>
+            <div class="float-item">🌟</div>
+            <div class="float-item">✨</div>
+            <div class="float-item">⭐</div>
+        </div>
+        """, unsafe_allow_html=True)
+
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Your Life as a Playlist", page_icon="🎵", layout="centered")
 
@@ -624,14 +805,17 @@ elif st.session_state.step == "quiz":
     """, unsafe_allow_html=True)
 
     for i, (option_text, p1, p2) in enumerate(q["options"]):
-        if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
-            st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
-            st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
-            if q_idx + 1 >= total:
-                st.session_state.step = "result"
-            else:
-                st.session_state.quiz_step += 1
-            st.rerun()
+    if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
+        st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
+        st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
+
+        if q_idx + 1 >= total:
+            show_result_loading()
+            st.session_state.step = "result"
+        else:
+            st.session_state.quiz_step += 1
+
+        st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("← Start over"):
@@ -656,6 +840,8 @@ elif st.session_state.step == "result":
         st.session_state.celebrated = True
 
     p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
+
+    render_persona_effect(persona_id)
 
     traits_html = "".join([f'<span class="trait-pill">{t}</span>' for t in p["traits"]])
     artist_note = ""
