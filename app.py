@@ -583,7 +583,7 @@ def render_persona_effect(persona_id):
             position: absolute;
             bottom: -80px;
             font-size: 2rem;
-            opacity: 0.55;
+            opacity: 0.75;
             animation: trendFloatUp 8s linear infinite;
         }
 
@@ -603,7 +603,7 @@ def render_persona_effect(persona_id):
                 opacity: 0;
             }
             12% {
-                opacity: 0.55;
+                opacity: 0.75;
             }
             45% {
                 transform: translateY(-45vh) translateX(35px) rotate(25deg) scale(1);
@@ -874,7 +874,7 @@ div[data-baseweb="input"] input::placeholder {
 }
 
 .artist-note {
-    opacity: 0.55;
+    opacity: 0.75;
     font-size: 0.82rem;
     margin-top: 1.2rem;
 }
