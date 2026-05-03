@@ -566,6 +566,69 @@ def render_persona_effect(persona_id):
         </div>
         """, unsafe_allow_html=True)
 
+    elif persona_id == "the-trendsetter":
+        st.markdown("""
+        <style>
+        .trendsetter-animation-layer {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 999;
+        }
+
+        .trend-particle {
+            position: absolute;
+            bottom: -80px;
+            font-size: 2rem;
+            opacity: 0.55;
+            animation: trendFloatUp 8s linear infinite;
+        }
+
+        .trend-particle:nth-child(1) { left: 6%; animation-delay: 0s; animation-duration: 8s; }
+        .trend-particle:nth-child(2) { left: 16%; animation-delay: 1s; animation-duration: 10s; }
+        .trend-particle:nth-child(3) { left: 28%; animation-delay: 2s; animation-duration: 9s; }
+        .trend-particle:nth-child(4) { left: 40%; animation-delay: 3s; animation-duration: 11s; }
+        .trend-particle:nth-child(5) { left: 52%; animation-delay: 1.5s; animation-duration: 8.5s; }
+        .trend-particle:nth-child(6) { left: 64%; animation-delay: 2.5s; animation-duration: 10.5s; }
+        .trend-particle:nth-child(7) { left: 76%; animation-delay: 4s; animation-duration: 9.5s; }
+        .trend-particle:nth-child(8) { left: 88%; animation-delay: 5s; animation-duration: 11s; }
+        .trend-particle:nth-child(9) { left: 95%; animation-delay: 3.5s; animation-duration: 8s; }
+
+        @keyframes trendFloatUp {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(0.7);
+                opacity: 0;
+            }
+            12% {
+                opacity: 0.55;
+            }
+            45% {
+                transform: translateY(-45vh) translateX(35px) rotate(25deg) scale(1);
+                opacity: 0.45;
+            }
+            100% {
+                transform: translateY(-115vh) translateX(-30px) rotate(70deg) scale(1.2);
+                opacity: 0;
+            }
+        }
+        </style>
+
+        <div class="trendsetter-animation-layer">
+            <div class="trend-particle">✨</div>
+            <div class="trend-particle">🚀</div>
+            <div class="trend-particle">💿</div>
+            <div class="trend-particle">⚡</div>
+            <div class="trend-particle">✨</div>
+            <div class="trend-particle">🪩</div>
+            <div class="trend-particle">🚀</div>
+            <div class="trend-particle">✨</div>
+            <div class="trend-particle">💿</div>
+        </div>
+        """, unsafe_allow_html=True)
+
 def trigger_persona_celebration(persona_id):
     # One-time celebration effect
     if persona_id == "the-life-of-the-party":
