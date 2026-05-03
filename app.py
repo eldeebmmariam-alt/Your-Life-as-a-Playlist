@@ -825,7 +825,7 @@ for i, (option_text, p1, p2) in enumerate(q["options"]):
 # ═══════════════════════════════════════════════════════════════
 # STEP 3 — RESULT
 # ═══════════════════════════════════════════════════════════════
-elif st.session_state.step == "result":
+if st.session_state.step == "result":
 
     persona_id = merge_and_decide(
         st.session_state.artist_scores,
