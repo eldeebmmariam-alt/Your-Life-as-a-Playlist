@@ -503,6 +503,87 @@ def render_persona_effect(persona_id):
         </div>
         """, unsafe_allow_html=True)
 
+def trigger_persona_celebration(persona_id):
+    # One-time celebration effect
+    if persona_id == "the-life-of-the-party":
+        st.balloons()
+
+    elif persona_id == "the-daydreamer":
+        st.snow()   # dreamy floating vibe
+
+    elif persona_id == "the-romantic":
+        st.markdown("""
+        <div style="text-align:center; font-size:2rem; margin: 1rem 0 0.5rem 0;">
+            💖 🦋 💕 ✨ 💗
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-main-character":
+        st.markdown("""
+        <div style="text-align:center; font-size:2rem; margin: 1rem 0 0.5rem 0;">
+            🌟 ⭐ ✨ 🎬 ✨ ⭐ 🌟
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-chill-soul":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            🍃 ☕ ✨ 🍃
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-overthinker":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            🌀 🌙 ✨ 🌀
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-lone-wolf":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            🌙 🐺 ✨
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-old-soul":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            🎷 📻 ✨ 🎶
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-hype-beast":
+        st.balloons()
+
+    elif persona_id == "the-free-spirit":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            🌿 🌈 ✨ 🌍
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-nostalgist":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            📼 ✨ 💿 🕰️
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-rebel":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            ⚡ 🔥 🎸
+        </div>
+        """, unsafe_allow_html=True)
+
+    elif persona_id == "the-trendsetter":
+        st.markdown("""
+        <div style="text-align:center; font-size:1.8rem; margin: 1rem 0 0.5rem 0;">
+            ✨ 🚀 💿 ✨
+        </div>
+        """, unsafe_allow_html=True)
+
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Your Life as a Playlist", page_icon="🎵", layout="centered")
 
@@ -837,7 +918,7 @@ if st.session_state.step == "result":
         st.session_state.celebrated = False
 
     if not st.session_state.get("celebrated", False):
-        st.balloons()
+        trigger_persona_celebration(persona_id)
         st.session_state.celebrated = True
 
     p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
