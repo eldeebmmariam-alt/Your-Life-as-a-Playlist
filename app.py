@@ -823,8 +823,8 @@ st.markdown(f"""
     """, unsafe_allow_html=True)
 
     # ── Music DNA — reads from persona.dna dictionary ──────────
-    st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
-    st.markdown(f"""
+st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
+st.markdown(f"""
     <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;">
         {dna_bar("Energy", persona.dna["energy"], persona.color)}
         {dna_bar("Extroversion", persona.dna["extroversion"], persona.color)}
