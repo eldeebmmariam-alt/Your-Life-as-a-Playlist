@@ -779,9 +779,9 @@ if st.session_state.step == "artists":
             st.rerun()
 
 # ═══════════════════════════════════════════════════════════════
-# STEP 2 — QUIZ (7 questions from the Excel)
+# STEP 2 — QUIZ
 # ═══════════════════════════════════════════════════════════════
-elif st.session_state.step == "quiz":
+if st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
 
@@ -804,20 +804,21 @@ elif st.session_state.step == "quiz":
     </div>
     """, unsafe_allow_html=True)
 
-for i, (option_text, p1, p2) in enumerate(q["options"]):
-    if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
-        st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
-        st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
+    for i, (option_text, p1, p2) in enumerate(q["options"]):
+        if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
+            st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
+            st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
 
-        if q_idx + 1 >= total:
-            show_result_loading()
-            st.session_state.step = "result"
-        else:
-            st.session_state.quiz_step += 1
+            if q_idx + 1 >= total:
+                show_result_loading()
+                st.session_state.step = "result"
+            else:
+                st.session_state.quiz_step += 1
 
-        st.rerun()
+            st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
+
     if st.button("← Start over"):
         restart()
         st.rerun()
