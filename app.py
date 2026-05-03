@@ -807,8 +807,8 @@ elif st.session_state.step == "result":
 st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
 
     # ── Shareable card — shown first ───────────────────────────
-    st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>', unsafe_allow_html=True)
+st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
+st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>', unsafe_allow_html=True)
 
     st.markdown(f"""
     <div style="background:linear-gradient(145deg,#0f0c29,{persona.color}55,#0f0c29);border:2px solid {persona.color}88;border-radius:24px;padding:2.5rem 2rem;text-align:center;max-width:420px;margin:0 auto;">
