@@ -647,7 +647,7 @@ elif st.session_state.step == "result":
         st.session_state.quiz_scores
     )
     if "celebrated" not in st.session_state:
-    st.session_state.celebrated = False
+        st.session_state.celebrated = False
 
 if not st.session_state.celebrated:
     st.balloons()
