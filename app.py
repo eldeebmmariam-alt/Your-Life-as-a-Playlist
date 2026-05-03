@@ -806,20 +806,6 @@ elif st.session_state.step == "result":
 
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
 
-    # ── Main result card — uses persona object attributes ──────
-    st.markdown(f"""
-    <div class="result-card" style="background:linear-gradient(135deg,{persona.color}22,{persona.color}44);border:2px solid {persona.color}55;">
-        <span class="result-emoji">{persona.emoji}</span>
-        <div class="result-name" style="color:{persona.color};">{persona.name}</div>
-        <div class="result-desc" style="color:white;">{persona.description}</div>
-        <div class="anthem-box" style="color:{persona.color};">
-            🎶 Your anthem: <strong>{persona.anthem}</strong>
-        </div>
-        <div>{traits_html}</div>
-        {artist_note}
-    </div>
-    """, unsafe_allow_html=True)
-
     # ── Music DNA — reads from persona.dna dictionary ──────────
     st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
     st.markdown(f"""
