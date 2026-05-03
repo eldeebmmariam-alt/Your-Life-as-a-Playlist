@@ -1,16 +1,16 @@
 import streamlit as st
 import pandas as pd
 import time
-
+ 
 # ============================================================
 # TOPIC 1 — DATA STRUCTURES & EXPRESSIONS
 # Covers: dictionaries, lists, string expressions
 # ============================================================
-
+ 
 # Dictionary: maps artist names to their info (loaded from Excel)
 # List: stores quiz questions and answer options
 # Expressions: used throughout for string formatting and conditions
-
+ 
 PERSONA_DETAILS = {
     "the-life-of-the-party": {
         "name": "The Life of the Party",
@@ -143,7 +143,7 @@ PERSONA_DETAILS = {
         "dna": {"energy": 75, "extroversion": 70, "emotionality": 60},
     },
 }
-
+ 
 # Dictionary: maps genre keywords to persona IDs
 GENRE_TO_PERSONA = {
     "Pop": "the-life-of-the-party",
@@ -196,7 +196,7 @@ GENRE_TO_PERSONA = {
     "Electronic": "the-trendsetter",
     "UK Rap": "the-trendsetter",
 }
-
+ 
 # List of dictionaries: each quiz question with its answer options
 QUIZ_QUESTIONS = [
     {
@@ -290,7 +290,7 @@ QUIZ_QUESTIONS = [
         ]
     },
 ]
-
+ 
 # ============================================================
 # TOPIC 1 — DATA STRUCTURES (continued)
 # Genre profiles stored as nested dictionaries
@@ -310,7 +310,7 @@ GENRE_PROFILES = {
     "Folk":        {"energy": 1, "extroversion": 1, "emotionality": 3},
     "Latin":       {"energy": 3, "extroversion": 3, "emotionality": 2},
 }
-
+ 
 # ============================================================
 # TOPIC 1 — PERSON 1: DATA LOADING
 # Uses: pandas DataFrame, dictionary, for loop (Topic 2)
@@ -326,7 +326,7 @@ def load_artist_data(filepath):
             "country": str(row["Country"]).strip(),
         }
     return artist_data
-
+ 
 # ============================================================
 # TOPIC 2 — FLOW CONTROL
 # PERSON 2: SEARCH LOGIC
@@ -336,37 +336,37 @@ def search_artist(name, data):
     # if/else: check for empty input first
     if name is None or name.strip() == "":
         return "Error: Please enter an artist name."
-
+ 
     name = name.strip().lower()
-
+ 
     # if: direct match check
     if name in data:
         return data[name]
-
+ 
     # for loop: search for partial matches
     possible_matches = []
     for artist_key in data:
         if name in artist_key or artist_key in name:
             possible_matches.append(data[artist_key]["name"])
-
+ 
     # if/else: return suggestion or failure message
     if possible_matches:
         return f"Artist not found. Did you mean: {', '.join(possible_matches[:5])}?"
     else:
         return "Artist not found. Please try again."
-
-
+ 
+ 
 # ============================================================
 # TOPIC 3 — FUNCTIONS
 # PERSON 3: CORE QUIZ LOGIC
 # Each function has a clear input → process → return structure
 # ============================================================
-
+ 
 def load_data(filepath):
     """Function 1: Load and return the artist database."""
     return load_artist_data(filepath)
-
-
+ 
+ 
 def get_artist_info_safe(artist_name, data):
     """Function 2: Return artist info dict or an error string."""
     result = search_artist(artist_name, data)
@@ -374,8 +374,8 @@ def get_artist_info_safe(artist_name, data):
         return result
     else:
         return {"error": result}
-
-
+ 
+ 
 def build_user_profile(artist_names, data):
     """
     Function 3: Build a personality profile from a list of artist names.
@@ -383,7 +383,7 @@ def build_user_profile(artist_names, data):
     """
     profile = {"energy": 0, "extroversion": 0, "emotionality": 0}
     found_count = 0
-
+ 
     for name in artist_names:                     # for loop over artists
         result = search_artist(name, data)
         if isinstance(result, dict):              # if artist was found
@@ -396,18 +396,18 @@ def build_user_profile(artist_names, data):
                 profile["energy"] += 1
                 profile["extroversion"] += 1
                 profile["emotionality"] += 1
-
+ 
     return profile, found_count
-
-
+ 
+ 
 def genre_to_persona_id(genre):
     """Function 4: Map a genre string to a persona ID using keyword matching."""
     for key, pid in GENRE_TO_PERSONA.items():    # for loop over genre map
         if key.lower() in genre.lower():          # if keyword found in genre
             return pid
     return "the-free-spirit"                      # default fallback
-
-
+ 
+ 
 def merge_and_decide(artist_scores, quiz_scores):
     """
     Function 5: Combine artist scores (40%) and quiz scores (60%).
@@ -415,24 +415,24 @@ def merge_and_decide(artist_scores, quiz_scores):
     """
     all_ids = set(list(artist_scores.keys()) + list(quiz_scores.keys()))
     final = {}
-
+ 
     for pid in all_ids:                           # for loop over all persona IDs
         a = artist_scores.get(pid, 0)
         q = quiz_scores.get(pid, 0)
         final[pid] = (a * 0.4) + (q * 0.6)      # weighted expression
-
+ 
     if final:
         return max(final, key=final.get)          # return highest scoring persona
     else:
         return "the-free-spirit"
-
-
+ 
+ 
 def format_result(persona_id):
     """Function 6: Look up full persona details and return a formatted string."""
     p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
     return f"{p['emoji']} {p['name']}: {p['description']}"
-
-
+ 
+ 
 # ============================================================
 # TOPIC 4 — CLASSES
 # PERSON 4: MusicPersona CLASS
@@ -446,7 +446,7 @@ class MusicPersona:
     def __init__(self, persona_id, artist_names_found):
         # Look up the persona details from the data dictionary
         p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
-
+ 
         # Assign all attributes
         self.persona_id      = persona_id
         self.name            = p["name"]
@@ -458,11 +458,11 @@ class MusicPersona:
         self.artists         = p["artists"]         # list
         self.dna             = p["dna"]             # dict
         self.artist_sources  = artist_names_found   # list of what user typed
-
+ 
     def get_traits_string(self):
         """Method: returns traits joined as a readable string."""
         return " · ".join(self.traits)
-
+ 
     def get_share_text(self):
         """Method: returns a copyable text summary for sharing."""
         return (
@@ -472,11 +472,11 @@ class MusicPersona:
             f"My traits: {self.get_traits_string()}\n\n"
             f"Find yours at yourlifeasaplaylist.streamlit.app"
         )
-
+ 
     def __repr__(self):
         return f"MusicPersona(name={self.name!r}, persona_id={self.persona_id!r})"
-
-
+ 
+ 
 # ============================================================
 # ANIMATIONS — background effects per persona (all 13)
 # ============================================================
@@ -495,9 +495,9 @@ PERSONA_ANIMATIONS = {
     "the-rebel":             {"items": ["⚡","🔥","🎸","⚡","🔥","🎸","⚡","🔥","🎸"], "anim": "rebelCrash", "dir": "top", "css": "@keyframes rebelCrash{0%{transform:translateY(0) rotate(0deg);opacity:0}6%{opacity:0.38}88%{opacity:0.2}100%{transform:translateY(110vh) rotate(180deg);opacity:0}}"},
     "the-trendsetter":       {"items": ["✨","🚀","💿","⚡","✨","🪩","🚀","✨","💿"], "anim": "trendRise", "dir": "bottom", "css": "@keyframes trendRise{0%{transform:translateY(0) scale(0.7);opacity:0}10%{opacity:0.5}100%{transform:translateY(-115vh) scale(1.2);opacity:0}}"},
 }
-
+ 
 POSITIONS = [("8%","6%"),("15%","82%"),("28%","18%"),("44%","72%"),("60%","35%"),("72%","88%"),("38%","55%"),("82%","20%"),("50%","92%")]
-
+ 
 def render_persona_animation(persona_id):
     anim = PERSONA_ANIMATIONS.get(persona_id)
     if not anim:
@@ -519,8 +519,8 @@ def render_persona_animation(persona_id):
             pos = f"top:{top};left:{left};"
         items_html += f'<div style="position:absolute;{pos}font-size:1.8rem;opacity:0;animation:{anim["anim"]} {duration}s ease-in-out {delay}s infinite;">{item}</div>'
     st.markdown(f'<style>#{uid}_layer{{position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;overflow:hidden;z-index:999;}}{anim["css"]}</style><div id="{uid}_layer">{items_html}</div>', unsafe_allow_html=True)
-
-
+ 
+ 
 def dna_bar(label, value, color):
     """Helper function: renders a single DNA progress bar as HTML."""
     return f"""
@@ -533,17 +533,17 @@ def dna_bar(label, value, color):
             <div style="width:{value}%;background:linear-gradient(90deg,{color}88,{color});height:100%;border-radius:50px;"></div>
         </div>
     </div>"""
-
-
+ 
+ 
 def restart():
     """Helper function: clears all session state to restart the quiz."""
     for key in list(st.session_state.keys()):
         del st.session_state[key]
-
-
+ 
+ 
 # ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Your Life as a Playlist", page_icon="🎵", layout="centered")
-
+ 
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600&display=swap');
@@ -590,7 +590,7 @@ div[data-baseweb="input"] input::placeholder{color:rgba(26,26,46,0.4)!important;
 footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{visibility:hidden;}
 </style>
 """, unsafe_allow_html=True)
-
+ 
 # ── Session state defaults (Topic 2: flow control) ────────────────────────────
 defaults = {
     "step": "intro",
@@ -603,23 +603,23 @@ defaults = {
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
-
+ 
 @st.cache_data
 def get_data():
     return load_data("database_artists.xlsx")
-
+ 
 data = get_data()
-
+ 
 # ═══════════════════════════════════════════════════════════════
 # TOPIC 2 — FLOW CONTROL: step routing using if/elif/else
 # Each screen is a separate state, controlled by conditions
 # ═══════════════════════════════════════════════════════════════
-
+ 
 # ── INTRO ─────────────────────────────────────────────────────
 if st.session_state.step == "intro":
     st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Find out which music persona you actually are.</div>', unsafe_allow_html=True)
-
+ 
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">13</div><div class="intro-stat-label">possible personas</div></div>', unsafe_allow_html=True)
@@ -627,17 +627,16 @@ if st.session_state.step == "intro":
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">10</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
     with c3:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">600+</div><div class="intro-stat-label">artists in our database</div></div>', unsafe_allow_html=True)
-
+ 
     st.markdown("<br>", unsafe_allow_html=True)
-
-    st.markdown("""
-    <div style="text-align:center;margin-bottom:1.5rem;">
-        <span style="font-size:1rem;color:rgba(255,255,255,0.38);letter-spacing:0.05em;font-style:italic;">
-            We'll reveal your music identity at the end.
-        </span>
-    </div>
-    """, unsafe_allow_html=True)
-
+ 
+    # for loop: build persona preview pills from list
+    personas_preview = " ".join([
+        f'<span class="persona-preview-pill">{p["emoji"]} {p["name"]}</span>'
+        for p in PERSONA_DETAILS.values()
+    ])
+    st.markdown(f'<div style="text-align:center;margin-bottom:1.5rem;">{personas_preview}</div>', unsafe_allow_html=True)
+ 
     st.markdown("""
     <div class="question-card" style="text-align:center;">
         <div style="font-size:1rem;color:rgba(255,255,255,0.75);line-height:1.8;">
@@ -647,40 +646,40 @@ if st.session_state.step == "intro":
         </div>
     </div>
     """, unsafe_allow_html=True)
-
+ 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Let's find my sound →", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
-
+ 
 # ── STEP 1: ARTIST INPUT ──────────────────────────────────────
 elif st.session_state.step == "artists":
     st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">✦ Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
-
+ 
     st.markdown("""
     <div class="question-card">
         <div class="question-text">Which artists define your soundtrack?</div>
         <div style="font-size:0.9rem;color:rgba(255,255,255,0.5);margin-top:0.5rem;">Enter up to 3. At least 1 is required.</div>
     </div>
     """, unsafe_allow_html=True)
-
+ 
     artist1 = st.text_input("Artist #1", placeholder="e.g. Taylor Swift")
     artist2 = st.text_input("Artist #2 (optional)", placeholder="e.g. Kendrick Lamar")
     artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Adele")
-
+ 
     st.markdown("<br>", unsafe_allow_html=True)
-
+ 
     if st.button("Next — Take the quiz →", use_container_width=True):
         artists = [a for a in [artist1, artist2, artist3] if a.strip()]
-
+ 
         # Flow control: check if input is empty
         if not artists:
             st.warning("Please enter at least one artist.")
         else:
             artist_scores = {}
             found_names = []
-
+ 
             # for loop: process each artist input
             for name in artists:
                 result = search_artist(name, data)
@@ -688,7 +687,7 @@ elif st.session_state.step == "artists":
                     pid = genre_to_persona_id(result.get("genre", ""))
                     artist_scores[pid] = artist_scores.get(pid, 0) + 3
                     found_names.append(name)
-
+ 
             # Flow control: check if any artists were found
             if not found_names:
                 st.error("None of those artists were found. Try checking the spelling.")
@@ -698,15 +697,15 @@ elif st.session_state.step == "artists":
                 st.session_state.artist_names_found = found_names
                 st.session_state.step = "quiz"
                 st.rerun()
-
+ 
 # ── STEP 2: QUIZ ──────────────────────────────────────────────
 elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
-
+ 
     st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
     st.markdown(f'<div class="step-badge">✦ Step 2 of 2 — Question {q_idx + 1} of {total}</div>', unsafe_allow_html=True)
-
+ 
     # for loop: build progress dots
     dots = "".join([
         f'<div class="dot {"done" if i < q_idx else "active" if i == q_idx else ""}"></div>'
@@ -714,32 +713,32 @@ elif st.session_state.step == "quiz":
     ])
     st.markdown(f'<div class="progress-dots">{dots}</div>', unsafe_allow_html=True)
     st.progress(q_idx / total)
-
+ 
     q = QUIZ_QUESTIONS[q_idx]
     st.markdown(f'<div class="question-card"><div class="question-text">{q["question"]}</div></div>', unsafe_allow_html=True)
-
+ 
     # for loop: display answer buttons
     for i, (option_text, p1, p2) in enumerate(q["options"]):
         if st.button(option_text, key=f"q{q_idx}_opt{i}", use_container_width=True):
             st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
             st.session_state.quiz_scores[p2] = st.session_state.quiz_scores.get(p2, 0) + 1
-
+ 
             # if/else: check if quiz is finished
             if q_idx + 1 >= total:
                 st.session_state.step = "loading"
             else:
                 st.session_state.quiz_step += 1
             st.rerun()
-
+ 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("← Start over"):
         restart()
         st.rerun()
-
+ 
 # ── LOADING SCREEN ────────────────────────────────────────────
 elif st.session_state.step == "loading":
     st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
-
+ 
     # List of loading messages
     messages = [
         ("🎧", "Analyzing your artists..."),
@@ -747,9 +746,9 @@ elif st.session_state.step == "loading":
         ("🎼", "Matching your music personality..."),
         ("💿", "Revealing your identity..."),
     ]
-
+ 
     placeholder = st.empty()
-
+ 
     # for loop: cycle through loading messages
     for emoji, msg in messages:
         placeholder.markdown(f"""
@@ -764,26 +763,26 @@ elif st.session_state.step == "loading":
         </div>
         """, unsafe_allow_html=True)
         time.sleep(0.9)
-
+ 
     placeholder.empty()
     st.session_state.step = "result"
     st.rerun()
-
+ 
 # ── RESULT ────────────────────────────────────────────────────
 elif st.session_state.step == "result":
-
+ 
     # TOPIC 3: call merge_and_decide function to get winning persona
     persona_id = merge_and_decide(
         st.session_state.artist_scores,
         st.session_state.quiz_scores
     )
-
+ 
     # TOPIC 4: instantiate the MusicPersona class with the result
     persona = MusicPersona(
         persona_id=persona_id,
         artist_names_found=st.session_state.artist_names_found
     )
-
+ 
     # One-time celebration using if/elif
     if not st.session_state.celebrated:
         if persona.persona_id in ("the-life-of-the-party", "the-hype-beast"):
@@ -791,26 +790,26 @@ elif st.session_state.step == "result":
         elif persona.persona_id == "the-daydreamer":
             st.snow()
         st.session_state.celebrated = True
-
+ 
     # Render background animation for this persona
     render_persona_animation(persona.persona_id)
-
+ 
     # Build HTML from class attributes (Topic 4 in use)
     traits_html = "".join([
         f'<span class="trait-pill">{t}</span>' for t in persona.traits
     ])
-
+ 
     artist_note = ""
     if persona.artist_sources:
         artist_note = f'<p style="opacity:0.6;font-size:0.82rem;margin-top:1.2rem;">Based on: {", ".join(persona.artist_sources)} — combined with your quiz answers.</p>'
-
-st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
-
+ 
+    st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
+ 
     # ── Shareable card — shown first ───────────────────────────
-st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
-st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>', unsafe_allow_html=True)
-
-st.markdown(f"""
+    st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>', unsafe_allow_html=True)
+ 
+    st.markdown(f"""
     <div style="background:linear-gradient(145deg,#0f0c29,{persona.color}55,#0f0c29);border:2px solid {persona.color}88;border-radius:24px;padding:2.5rem 2rem;text-align:center;max-width:420px;margin:0 auto;">
         <div style="font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;color:{persona.color};margin-bottom:1rem;font-weight:600;">Your Life as a Playlist</div>
         <div style="font-size:4rem;margin-bottom:0.5rem;">{persona.emoji}</div>
@@ -818,34 +817,34 @@ st.markdown(f"""
         <div style="font-size:0.85rem;color:rgba(255,255,255,0.75);line-height:1.65;margin-bottom:1.25rem;padding:0 0.5rem;">{persona.description[:120]}...</div>
         <div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:0.75rem 1rem;margin-bottom:1.25rem;font-size:0.85rem;color:{persona.color};">🎶 <strong>{persona.anthem}</strong></div>
         <div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">{persona.get_traits_string()}</div>
+        {artist_note}
         <div style="margin-top:1rem;font-size:0.7rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;">yourlifeasaplaylist.streamlit.app</div>
     </div>
     """, unsafe_allow_html=True)
-
+ 
     # ── Music DNA — reads from persona.dna dictionary ──────────
-st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
-st.markdown(f"""
+    st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
+    st.markdown(f"""
     <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;">
         {dna_bar("Energy", persona.dna["energy"], persona.color)}
         {dna_bar("Extroversion", persona.dna["extroversion"], persona.color)}
         {dna_bar("Emotionality", persona.dna["emotionality"], persona.color)}
     </div>
     """, unsafe_allow_html=True)
-
+ 
     # ── Artists you'd vibe with — reads from persona.artists list
-st.markdown('<div class="section-title">🎤 Artists you\'d vibe with</div>', unsafe_allow_html=True)
-    # for loop: build artist chips from persona.artists list
-artists_html = "".join([
+    st.markdown('<div class="section-title">🎤 Artists you\'d vibe with</div>', unsafe_allow_html=True)
+    artists_html = "".join([
         f'<span class="artist-chip">♪ {a}</span>' for a in persona.artists
     ])
-st.markdown(f'<div style="text-align:center;">{artists_html}</div>', unsafe_allow_html=True)
-
+    st.markdown(f'<div style="text-align:center;">{artists_html}</div>', unsafe_allow_html=True)
+ 
     # ── Copy text — uses persona.get_share_text() method ───────
-st.markdown("<br>", unsafe_allow_html=True)
-st.code(persona.get_share_text(), language=None)
-st.markdown('<p style="font-size:0.8rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:-0.5rem;">↑ Copy this to share your result in chats</p>', unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.code(persona.get_share_text(), language=None)
+    st.markdown('<p style="font-size:0.8rem;color:rgba(255,255,255,0.4);text-align:center;margin-top:-0.5rem;">↑ Copy this to share your result in chats</p>', unsafe_allow_html=True)
+ 
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 Take it again", use_container_width=True):
         restart()
         st.rerun()
