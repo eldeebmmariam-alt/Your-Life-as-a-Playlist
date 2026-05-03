@@ -630,12 +630,13 @@ if st.session_state.step == "intro":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # for loop: build persona preview pills from list
-    personas_preview = " ".join([
-        f'<span class="persona-preview-pill">{p["emoji"]} {p["name"]}</span>'
-        for p in PERSONA_DETAILS.values()
-    ])
-    st.markdown(f'<div style="text-align:center;margin-bottom:1.5rem;">{personas_preview}</div>', unsafe_allow_html=True)
+st.markdown("""
+    <div style="text-align:center;margin-bottom:1.5rem;">
+        <span style="font-size:1rem;color:rgba(255,255,255,0.38);letter-spacing:0.05em;font-style:italic;">
+            We'll reveal your music identity at the end.
+        </span>
+    </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("""
     <div class="question-card" style="text-align:center;">
