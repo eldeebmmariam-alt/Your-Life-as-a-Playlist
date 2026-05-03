@@ -320,6 +320,7 @@ def restart():
     st.session_state.quiz_scores = {}
     st.session_state.quiz_step = 0
     st.session_state.artist_names_found = []
+    st.session_state.celebrated = False
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Your Life as a Playlist", page_icon="🎵", layout="centered")
@@ -645,6 +646,12 @@ elif st.session_state.step == "result":
         st.session_state.artist_scores,
         st.session_state.quiz_scores
     )
+    if "celebrated" not in st.session_state:
+    st.session_state.celebrated = False
+
+if not st.session_state.celebrated:
+    st.balloons()
+    st.session_state.celebrated = True
     p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
 
     traits_html = "".join([f'<span class="trait-pill">{t}</span>' for t in p["traits"]])
