@@ -518,7 +518,8 @@ if "quiz_step" not in st.session_state:
     st.session_state.quiz_step = 0
 if "artist_names_found" not in st.session_state:
     st.session_state.artist_names_found = []
-
+if "celebrated" not in st.session_state:
+    st.session_state.celebrated = False
 # ── Load data ─────────────────────────────────────────────────────────────────
 @st.cache_data
 def get_data():
@@ -646,16 +647,19 @@ elif st.session_state.step == "result":
         st.session_state.artist_scores,
         st.session_state.quiz_scores
     )
+
     if "celebrated" not in st.session_state:
         st.session_state.celebrated = False
 
-if not st.session_state.celebrated:
-    st.balloons()
-    st.session_state.celebrated = True
+    if not st.session_state.get("celebrated", False):
+        st.balloons()
+        st.session_state.celebrated = True
+
     p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
 
     traits_html = "".join([f'<span class="trait-pill">{t}</span>' for t in p["traits"]])
     artist_note = ""
+
     if st.session_state.artist_names_found:
         artist_note = f'<p class="artist-note">Based on your artists: {", ".join(st.session_state.artist_names_found)} — combined with your quiz answers.</p>'
 
