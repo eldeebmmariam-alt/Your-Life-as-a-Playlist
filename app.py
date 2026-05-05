@@ -1057,7 +1057,6 @@ elif st.session_state.step == "result":
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Your music identity has been revealed.</div>', unsafe_allow_html=True)
 
-    # ── 0. Download card (at top, collapsed by default) ──────────────────────
 # ── 0. Download card — safe version ──────────────────────────────────────
 with st.expander("📸 Download your result card"):
     try:
@@ -1075,8 +1074,8 @@ with st.expander("📸 Download your result card"):
             key="dl_top",
         )
 
-except Exception:
-    st.warning("The downloadable card could not be generated right now, but your result is still ready below.")
+    except Exception:
+        st.warning("The downloadable card could not be generated right now, but your result is still ready below.")
 
     # ── 1. Beautiful HTML result card ─────────────────────────────────────────
     st.markdown(
