@@ -1075,9 +1075,9 @@ with st.expander("📸 Download your result card"):
             key="dl_top",
         )
 
-    except Exception as e:
-        st.warning("The downloadable card could not be generated right now, but your result is still ready below.")
-        st.code(persona.get_share_text())
+except Exception:
+    st.warning("The downloadable card could not be generated right now, but your result is still ready below.")
+
     # ── 1. Beautiful HTML result card ─────────────────────────────────────────
     st.markdown(
         '<div class="result-card" style="background:linear-gradient(135deg,'
