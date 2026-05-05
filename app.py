@@ -535,19 +535,35 @@ class MusicPersona:
 def render_emoji_img(emoji_char, target_size=88):
     """Render a single emoji to an RGBA PIL Image using NotoColorEmoji."""
     font_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
-    for layout in [ImageFont.Layout.RAQM, None]:
-        for size in [109, 72, 64]:
-            try:
-                kw = {"layout_engine": layout} if layout is not None else {}
-                font = ImageFont.truetype(font_path, size, **kw)
-                tmp = Image.new("RGBA", (size * 2, size * 2), (0, 0, 0, 0))
-                d = ImageDraw.Draw(tmp)
-                d.text((size // 4, size // 4), emoji_char, font=font, embedded_color=True)
-                bbox = tmp.getbbox()
-                if bbox and bbox[2] > bbox[0] and bbox[3] > bbox[1]:
-                    return tmp.crop(bbox).resize((target_size, target_size), Image.LANCZOS)
-            except Exception:
-                continue
+    import os
+    if not os.path.exists(font_path):
+        return None
+    # Try every available approach
+    attempts = []
+    try:
+        attempts.append({"size": 109, "layout_engine": ImageFont.Layout.RAQM})
+    except Exception:
+        pass
+    attempts += [{"size": 109}, {"size": 72}, {"size": 64}]
+    for kw in attempts:
+        try:
+            font = ImageFont.truetype(font_path, **kw)
+            canvas_size = kw["size"] * 2
+            tmp = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
+            d = ImageDraw.Draw(tmp)
+            d.text((kw["size"] // 4, kw["size"] // 4), emoji_char,
+                   font=font, embedded_color=True)
+            bbox = tmp.getbbox()
+            if bbox and (bbox[2] - bbox[0]) > 4 and (bbox[3] - bbox[1]) > 4:
+                cropped = tmp.crop(bbox)
+                # Verify it has actual color content (not just grey/transparent)
+                pixels = list(cropped.getdata())
+                colored = sum(1 for p in pixels if len(p) == 4 and p[3] > 50
+                              and not (abs(p[0]-p[1]) < 10 and abs(p[1]-p[2]) < 10))
+                if colored > 10:
+                    return cropped.resize((target_size, target_size), Image.LANCZOS)
+        except Exception:
+            continue
     return None
 
 
@@ -1040,42 +1056,19 @@ elif st.session_state.step == "result":
 
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
 
-    # ── 0. Share your result (at top, collapsed by default) ───────────────────
-    with st.expander("📋 Share your result"):
-        col1, col2 = st.columns(2)
-        with col1:
-            share_lines = [
-                "My music persona is " + persona.name + " " + persona.emoji,
-                "",
-                persona.description,
-                "",
-                "My anthem: " + persona.anthem,
-                "",
-                "My traits: " + persona.get_traits_string(),
-                "",
-                "Find yours at yourlifeasaplaylist.streamlit.app",
-            ]
-            st.markdown(
-                '<p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">Copy text</p>',
-                unsafe_allow_html=True
-            )
-            st.code("\n".join(share_lines), language=None)
-        with col2:
-            st.markdown(
-                '<p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">Download card</p>',
-                unsafe_allow_html=True
-            )
-            card_bytes = generate_persona_card(persona)
-            card_img = Image.open(io.BytesIO(card_bytes))
-            st.image(card_img, use_container_width=True)
-            st.download_button(
-                label="⬇️ Download PNG",
-                data=card_bytes,
-                file_name="my-music-persona-" + persona.persona_id + ".png",
-                mime="image/png",
-                use_container_width=True,
-                key="dl_top",
-            )
+    # ── 0. Download card (at top, collapsed by default) ──────────────────────
+    with st.expander("📸 Download your result card"):
+        card_bytes = generate_persona_card(persona)
+        card_img = Image.open(io.BytesIO(card_bytes))
+        st.image(card_img, use_container_width=True)
+        st.download_button(
+            label="⬇️ Download PNG",
+            data=card_bytes,
+            file_name="my-music-persona-" + persona.persona_id + ".png",
+            mime="image/png",
+            use_container_width=True,
+            key="dl_top",
+        )
 
     # ── 1. Beautiful HTML result card ─────────────────────────────────────────
     st.markdown(
