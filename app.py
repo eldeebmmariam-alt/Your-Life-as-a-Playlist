@@ -1087,8 +1087,8 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
     
     # ── Shareable card (downloadable PNG) ────────────────────────────────────────
-    st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
-    st.markdown(
+st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
+st.markdown(
         '<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">'
         'Download and share it anywhere.</p>',
         unsafe_allow_html=True
@@ -1098,7 +1098,7 @@ st.markdown(f"""
     card_img = Image.open(io.BytesIO(card_bytes))
     st.image(card_img, use_container_width=True)
 
-    st.download_button(
+st.download_button(
         label="⬇️ Download your card",
         data=card_bytes,
         file_name="my-music-persona-" + persona.persona_id + ".png",
