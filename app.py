@@ -1055,21 +1055,24 @@ elif st.session_state.step == "result":
         )
 
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Your music identity has been revealed.</div>', unsafe_allow_html=True)
 
     # ── 0. Download card (at top, collapsed by default) ──────────────────────
-    with st.expander("📸 Download your result card"):
-        card_bytes = generate_persona_card(persona)
-        card_img = Image.open(io.BytesIO(card_bytes))
-        st.image(card_img, use_container_width=True)
-        st.download_button(
-            label="⬇️ Download PNG",
-            data=card_bytes,
-            file_name="my-music-persona-" + persona.persona_id + ".png",
-            mime="image/png",
-            use_container_width=True,
-            key="dl_top",
-        )
+with st.expander("📸 Download your result card"):
+    card_bytes = generate_persona_card(persona)
+    card_img = Image.open(io.BytesIO(card_bytes))
 
+    st.image(card_img, width=360)
+
+    st.download_button(
+        label="⬇️ Download PNG",
+        data=card_bytes,
+        file_name="my-music-persona-" + persona.persona_id + ".png",
+        mime="image/png",
+        use_container_width=True,
+        key="dl_top",
+    )
+    
     # ── 1. Beautiful HTML result card ─────────────────────────────────────────
     st.markdown(
         '<div class="result-card" style="background:linear-gradient(135deg,'
