@@ -1077,22 +1077,31 @@ with st.expander("📸 Download your result card"):
     except Exception:
         st.warning("The downloadable card could not be generated right now, but your result is still ready below.")
 
-    # ── 1. Beautiful HTML result card ─────────────────────────────────────────
-    st.markdown(
-        '<div class="result-card" style="background:linear-gradient(135deg,'
-        + persona.color + '22,' + persona.color + '44);border:2px solid '
-        + persona.color + '55;">'
-        '<span class="result-emoji">' + persona.emoji + '</span>'
-        '<div class="result-name" style="color:' + persona.color + ';">' + persona.name + '</div>'
-        '<div class="result-desc" style="color:white;">' + persona.description + '</div>'
-        '<div class="anthem-box" style="color:' + persona.color + ';">'
-        '🎶 Your anthem: <strong>' + persona.anthem + '</strong>'
-        '</div>'
-        '<div>' + traits_html + '</div>'
-        + artist_note +
-        '</div>',
-        unsafe_allow_html=True
-    )
+       # ── 1. Beautiful HTML result card ─────────────────────────────────────────
+    st.markdown(f"""
+    <div class="result-card" style="
+        background: linear-gradient(135deg, {persona.color}22, {persona.color}44);
+        border: 2px solid {persona.color}55;
+    ">
+        <span class="result-emoji">{persona.emoji}</span>
+
+        <div class="result-name" style="color:{persona.color};">
+            {persona.name}
+        </div>
+
+        <div class="result-desc" style="color:white;">
+            {persona.description}
+        </div>
+
+        <div class="anthem-box" style="color:{persona.color};">
+            🎶 Your anthem: <strong>{persona.anthem}</strong>
+        </div>
+
+        <div>{traits_html}</div>
+
+        {artist_note}
+    </div>
+    """, unsafe_allow_html=True)
 
     # ── 2. Music DNA ──────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
