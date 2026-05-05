@@ -1035,7 +1035,57 @@ elif st.session_state.step == "result":
         )
 
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
+st.markdown('<div class="hero-sub">Your music identity has been revealed.</div>', unsafe_allow_html=True)
 
+st.markdown(f"""
+<div class="result-card" style="
+    background: linear-gradient(135deg, {persona.color}25, {persona.color}45);
+    border: 2px solid {persona.color}55;
+">
+    <span style="
+        font-size:4.5rem;
+        display:block;
+        margin-bottom:0.5rem;
+    ">
+        {persona.emoji}
+    </span>
+
+    <div style="
+        font-family:'Playfair Display',serif;
+        font-size:2.6rem;
+        font-weight:700;
+        margin-bottom:1rem;
+        color:{persona.color};
+    ">
+        {persona.name}
+    </div>
+
+    <div style="
+        font-size:1.05rem;
+        line-height:1.75;
+        margin-bottom:1.5rem;
+        color:white;
+    ">
+        {persona.description}
+    </div>
+
+    <div style="
+        background:rgba(0,0,0,0.18);
+        border-radius:12px;
+        padding:0.9rem 1.4rem;
+        margin-bottom:1.4rem;
+        font-size:0.95rem;
+        color:{persona.color};
+    ">
+        🎶 Your anthem: <strong>{persona.anthem}</strong>
+    </div>
+
+    <div>{traits_html}</div>
+
+    {artist_note}
+</div>
+""", unsafe_allow_html=True)
+    
     # ── Shareable card (downloadable PNG) ────────────────────────────────────────
     st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
     st.markdown(
