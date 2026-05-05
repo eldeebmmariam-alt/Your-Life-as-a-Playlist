@@ -532,22 +532,22 @@ class MusicPersona:
 
 
 # ── Helper functions ───────────────────────────────────────────────────────────
-def render_emoji_img(emoji_char, target_size=80):
+def render_emoji_img(emoji_char, target_size=88):
     """Render a single emoji to an RGBA PIL Image using NotoColorEmoji."""
-    try:
-        font = ImageFont.truetype(
-            "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf",
-            109,
-            layout_engine=ImageFont.Layout.RAQM
-        )
-        tmp = Image.new("RGBA", (220, 220), (0, 0, 0, 0))
-        d = ImageDraw.Draw(tmp)
-        d.text((20, 20), emoji_char, font=font, embedded_color=True)
-        bbox = tmp.getbbox()
-        if bbox:
-            return tmp.crop(bbox).resize((target_size, target_size), Image.LANCZOS)
-    except Exception:
-        pass
+    font_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
+    for layout in [ImageFont.Layout.RAQM, None]:
+        for size in [109, 72, 64]:
+            try:
+                kw = {"layout_engine": layout} if layout is not None else {}
+                font = ImageFont.truetype(font_path, size, **kw)
+                tmp = Image.new("RGBA", (size * 2, size * 2), (0, 0, 0, 0))
+                d = ImageDraw.Draw(tmp)
+                d.text((size // 4, size // 4), emoji_char, font=font, embedded_color=True)
+                bbox = tmp.getbbox()
+                if bbox and bbox[2] > bbox[0] and bbox[3] > bbox[1]:
+                    return tmp.crop(bbox).resize((target_size, target_size), Image.LANCZOS)
+            except Exception:
+                continue
     return None
 
 
@@ -1040,6 +1040,43 @@ elif st.session_state.step == "result":
 
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
 
+    # ── 0. Share your result (at top, collapsed by default) ───────────────────
+    with st.expander("📋 Share your result"):
+        col1, col2 = st.columns(2)
+        with col1:
+            share_lines = [
+                "My music persona is " + persona.name + " " + persona.emoji,
+                "",
+                persona.description,
+                "",
+                "My anthem: " + persona.anthem,
+                "",
+                "My traits: " + persona.get_traits_string(),
+                "",
+                "Find yours at yourlifeasaplaylist.streamlit.app",
+            ]
+            st.markdown(
+                '<p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">Copy text</p>',
+                unsafe_allow_html=True
+            )
+            st.code("\n".join(share_lines), language=None)
+        with col2:
+            st.markdown(
+                '<p style="font-size:0.82rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">Download card</p>',
+                unsafe_allow_html=True
+            )
+            card_bytes = generate_persona_card(persona)
+            card_img = Image.open(io.BytesIO(card_bytes))
+            st.image(card_img, use_container_width=True)
+            st.download_button(
+                label="⬇️ Download PNG",
+                data=card_bytes,
+                file_name="my-music-persona-" + persona.persona_id + ".png",
+                mime="image/png",
+                use_container_width=True,
+                key="dl_top",
+            )
+
     # ── 1. Beautiful HTML result card ─────────────────────────────────────────
     st.markdown(
         '<div class="result-card" style="background:linear-gradient(135deg,'
@@ -1095,35 +1132,7 @@ elif st.session_state.step == "result":
             unsafe_allow_html=True
         )
 
-    # ── 5. Share your result (expandable) ────────────────────────────────────
-    st.markdown('<div class="section-title">📋 Share your result</div>', unsafe_allow_html=True)
-    with st.expander("Copy text to share in chats"):
-        share_lines = [
-            "My music persona is " + persona.name + " " + persona.emoji,
-            "",
-            persona.description,
-            "",
-            "My anthem: " + persona.anthem,
-            "",
-            "My traits: " + persona.get_traits_string(),
-            "",
-            "Find yours at yourlifeasaplaylist.streamlit.app",
-        ]
-        st.code("\n".join(share_lines), language=None)
-
-    with st.expander("Download as image"):
-        card_bytes = generate_persona_card(persona)
-        card_img = Image.open(io.BytesIO(card_bytes))
-        st.image(card_img, use_container_width=True)
-        st.download_button(
-            label="⬇️ Download card as PNG",
-            data=card_bytes,
-            file_name="my-music-persona-" + persona.persona_id + ".png",
-            mime="image/png",
-            use_container_width=True,
-        )
-
-    # ── 6. Take it again ──────────────────────────────────────────────────────
+    # ── 5. Take it again ──────────────────────────────────────────────────────
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 Take it again", use_container_width=True):
         restart()
