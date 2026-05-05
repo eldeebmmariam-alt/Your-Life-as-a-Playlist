@@ -811,6 +811,10 @@ div[data-baseweb="input"] input::placeholder{color:rgba(26,26,46,0.4)!important;
 @keyframes loadBounce{0%,80%,100%{transform:scale(0.7);opacity:0.5;}40%{transform:scale(1.2);opacity:1;}}
 .result-card{border-radius:24px;padding:2.5rem 2rem;text-align:center;margin:1rem 0;animation:resultReveal 0.6s ease forwards;}
 @keyframes resultReveal{from{opacity:0;transform:translateY(20px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.result-emoji{font-size:4.5rem;display:block;margin-bottom:0.5rem;}
+.result-name{font-family:'Playfair Display',serif;font-size:2.6rem;font-weight:700;margin-bottom:1rem;}
+.result-desc{font-size:1.05rem;line-height:1.75;margin-bottom:1.5rem;opacity:0.92;}
+.anthem-box{background:rgba(0,0,0,0.18);border-radius:12px;padding:0.9rem 1.4rem;margin-bottom:1.4rem;font-size:0.95rem;}
 .trait-pill{display:inline-block;background:rgba(0,0,0,0.15);border-radius:50px;padding:5px 16px;margin:4px;font-size:0.82rem;font-weight:500;}
 .section-title{font-family:'Playfair Display',serif;font-size:1.2rem;color:white;margin:1.5rem 0 0.75rem 0;}
 .artist-chip{display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:6px 16px;margin:4px;font-size:0.85rem;color:#e0e0e0;}
@@ -1035,78 +1039,25 @@ elif st.session_state.step == "result":
         )
 
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
-st.markdown('<div class="hero-sub">Your music identity has been revealed.</div>', unsafe_allow_html=True)
 
-st.markdown(f"""
-<div class="result-card" style="
-    background: linear-gradient(135deg, {persona.color}25, {persona.color}45);
-    border: 2px solid {persona.color}55;
-">
-    <span style="
-        font-size:4.5rem;
-        display:block;
-        margin-bottom:0.5rem;
-    ">
-        {persona.emoji}
-    </span>
-
-    <div style="
-        font-family:'Playfair Display',serif;
-        font-size:2.6rem;
-        font-weight:700;
-        margin-bottom:1rem;
-        color:{persona.color};
-    ">
-        {persona.name}
-    </div>
-
-    <div style="
-        font-size:1.05rem;
-        line-height:1.75;
-        margin-bottom:1.5rem;
-        color:white;
-    ">
-        {persona.description}
-    </div>
-
-    <div style="
-        background:rgba(0,0,0,0.18);
-        border-radius:12px;
-        padding:0.9rem 1.4rem;
-        margin-bottom:1.4rem;
-        font-size:0.95rem;
-        color:{persona.color};
-    ">
-        🎶 Your anthem: <strong>{persona.anthem}</strong>
-    </div>
-
-    <div>{traits_html}</div>
-
-    {artist_note}
-</div>
-""", unsafe_allow_html=True)
-    
-    # ── Shareable card (downloadable PNG) ────────────────────────────────────────
-st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
-st.markdown(
-        '<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">'
-        'Download and share it anywhere.</p>',
+    # ── 1. Beautiful HTML result card ─────────────────────────────────────────
+    st.markdown(
+        '<div class="result-card" style="background:linear-gradient(135deg,'
+        + persona.color + '22,' + persona.color + '44);border:2px solid '
+        + persona.color + '55;">'
+        '<span class="result-emoji">' + persona.emoji + '</span>'
+        '<div class="result-name" style="color:' + persona.color + ';">' + persona.name + '</div>'
+        '<div class="result-desc" style="color:white;">' + persona.description + '</div>'
+        '<div class="anthem-box" style="color:' + persona.color + ';">'
+        '🎶 Your anthem: <strong>' + persona.anthem + '</strong>'
+        '</div>'
+        '<div>' + traits_html + '</div>'
+        + artist_note +
+        '</div>',
         unsafe_allow_html=True
     )
 
-    card_bytes = generate_persona_card(persona)
-    card_img = Image.open(io.BytesIO(card_bytes))
-    st.image(card_img, use_container_width=True)
-
-st.download_button(
-        label="⬇️ Download your card",
-        data=card_bytes,
-        file_name="my-music-persona-" + persona.persona_id + ".png",
-        mime="image/png",
-        use_container_width=True,
-    )
-
-    # ── Music DNA ──────────────────────────────────────────────────────────────
+    # ── 2. Music DNA ──────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
     st.markdown(
         '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);'
@@ -1118,14 +1069,14 @@ st.download_button(
         unsafe_allow_html=True
     )
 
-    # ── Artists you would vibe with ────────────────────────────────────────────
+    # ── 3. Artists you would vibe with ────────────────────────────────────────
     st.markdown('<div class="section-title">🎤 Artists you would vibe with</div>', unsafe_allow_html=True)
     artists_html = "".join([
         '<span class="artist-chip">♪ ' + a + '</span>' for a in persona.artists
     ])
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
 
-    # ── Song recommendations ───────────────────────────────────────────────────
+    # ── 4. Song recommendations ───────────────────────────────────────────────
     st.markdown('<div class="section-title">🎧 Songs you might not know yet</div>', unsafe_allow_html=True)
     st.markdown(
         '<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">'
@@ -1144,6 +1095,35 @@ st.download_button(
             unsafe_allow_html=True
         )
 
+    # ── 5. Share your result (expandable) ────────────────────────────────────
+    st.markdown('<div class="section-title">📋 Share your result</div>', unsafe_allow_html=True)
+    with st.expander("Copy text to share in chats"):
+        share_lines = [
+            "My music persona is " + persona.name + " " + persona.emoji,
+            "",
+            persona.description,
+            "",
+            "My anthem: " + persona.anthem,
+            "",
+            "My traits: " + persona.get_traits_string(),
+            "",
+            "Find yours at yourlifeasaplaylist.streamlit.app",
+        ]
+        st.code("\n".join(share_lines), language=None)
+
+    with st.expander("Download as image"):
+        card_bytes = generate_persona_card(persona)
+        card_img = Image.open(io.BytesIO(card_bytes))
+        st.image(card_img, use_container_width=True)
+        st.download_button(
+            label="⬇️ Download card as PNG",
+            data=card_bytes,
+            file_name="my-music-persona-" + persona.persona_id + ".png",
+            mime="image/png",
+            use_container_width=True,
+        )
+
+    # ── 6. Take it again ──────────────────────────────────────────────────────
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 Take it again", use_container_width=True):
         restart()
