@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import time
+import io
+from PIL import Image, ImageDraw, ImageFont
 
 # ============================================================
 # TOPIC 1 — DATA STRUCTURES & EXPRESSIONS
@@ -348,6 +350,15 @@ QUIZ_QUESTIONS = [
             ("🎧 Honestly? Studio album with headphones. Live versions always disappoint.", "the-nostalgist", "the-old-soul"),
         ]
     },
+    {
+        "question": "If you could be born into any musical era, which would you choose?",
+        "options": [
+            ("📻 Pre-1950s. Jazz clubs, big bands, a time when musicians were treated like royalty.", "the-old-soul", "the-romantic"),
+            ("🕰️ The 60s–70s. Woodstock, Motown, the birth of everything. I would have been right there.", "the-old-soul", "the-nostalgist"),
+            ("🌃 The 80s–90s. When genres were exploding and nothing felt polished yet.", "the-nostalgist", "the-rebel"),
+            ("🚀 Right now. No other era has had access to this much music from everywhere at once.", "the-global-ear", "the-free-spirit"),
+        ]
+    },
 ]
 
 GENRE_PROFILES = {
@@ -521,6 +532,156 @@ class MusicPersona:
 
 
 # ── Helper functions ───────────────────────────────────────────────────────────
+def generate_persona_card(persona):
+    """Generate a downloadable PNG result card for the given MusicPersona."""
+
+    def hex_to_rgb(h):
+        h = h.lstrip("#")
+        return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
+    def blend(color, bg, alpha):
+        return tuple(int(bg[i] * (1 - alpha) + color[i] * alpha) for i in range(3))
+
+    def wrap_text(draw, text, font, max_width):
+        words = text.split()
+        lines, line = [], ""
+        for w in words:
+            test = (line + " " + w).strip()
+            if draw.textlength(test, font=font) < max_width:
+                line = test
+            else:
+                if line:
+                    lines.append(line)
+                line = w
+        if line:
+            lines.append(line)
+        return lines
+
+    W, H = 900, 1100
+    accent = hex_to_rgb(persona.color)
+    bg_dark = (15, 12, 41)
+    bg_mid  = (48, 43, 99)
+
+    img = Image.new("RGB", (W, H), bg_dark)
+    draw = ImageDraw.Draw(img)
+
+    # Gradient background
+    for y in range(H):
+        t = y / H
+        r = int(bg_dark[0] * (1-t) + bg_mid[0] * t)
+        g = int(bg_dark[1] * (1-t) + bg_mid[1] * t)
+        b = int(bg_dark[2] * (1-t) + bg_mid[2] * t)
+        draw.line([(0, y), (W, y)], fill=(r, g, b))
+
+    # Card background
+    pad = 60
+    draw.rounded_rectangle([pad, pad, W-pad, H-pad], radius=32,
+                            fill=blend(accent, bg_dark, 0.14),
+                            outline=(*accent, 100), width=2)
+    # Accent top bar
+    draw.rounded_rectangle([pad, pad, W-pad, pad+6], radius=3, fill=accent)
+
+    # Load fonts
+    try:
+        f_title  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf", 62)
+        f_body   = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 26)
+        f_small  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 20)
+        f_tiny   = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 17)
+        f_label  = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 17)
+        f_traits = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
+    except Exception:
+        f_title = f_body = f_small = f_tiny = f_label = f_traits = ImageFont.load_default()
+
+    cx = W // 2
+
+    # App label
+    lbl = "YOUR LIFE AS A PLAYLIST"
+    lw = draw.textlength(lbl, font=f_label)
+    draw.text(((W-lw)//2, 108), lbl, fill=(*accent, 200), font=f_label)
+
+    # Divider
+    draw.line([(cx-80, 144), (cx+80, 144)], fill=(*accent, 80), width=1)
+
+    # Emoji
+    draw.text((cx-38, 168), persona.emoji, fill=(255,255,255), font=f_title)
+
+    # Persona name
+    name_font = f_title
+    nw = draw.textlength(persona.name, font=name_font)
+    if nw > W - 160:
+        try:
+            name_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf", 46)
+        except Exception:
+            pass
+        nw = draw.textlength(persona.name, font=name_font)
+    draw.text(((W-nw)//2, 295), persona.name, fill=accent, font=name_font)
+
+    # Description
+    lines = wrap_text(draw, persona.description, f_body, W - 200)
+    y = 400
+    for line in lines[:5]:
+        lw2 = draw.textlength(line, font=f_body)
+        draw.text(((W-lw2)//2, y), line, fill=(215, 215, 225), font=f_body)
+        y += 38
+
+    # Anthem box
+    ay = y + 28
+    draw.rounded_rectangle([pad+40, ay, W-pad-40, ay+68],
+                            radius=14, fill=blend(accent, (0,0,0), 0.18),
+                            outline=(*accent, 70), width=1)
+    anthem_str = "♪  " + persona.anthem
+    aw = draw.textlength(anthem_str, font=f_body)
+    draw.text(((W-aw)//2, ay+20), anthem_str, fill=accent, font=f_body)
+
+    # Traits
+    ty = ay + 96
+    traits_str = "  ·  ".join(persona.traits)
+    tw = draw.textlength(traits_str, font=f_traits)
+    draw.text(((W-tw)//2, ty), traits_str, fill=(195, 195, 210), font=f_traits)
+
+    # DNA bars
+    dna_y = ty + 68
+    bar_x = pad + 80
+    bar_w = W - (pad + 80) * 2
+    dna_items = [
+        ("Energy",       persona.dna["energy"]),
+        ("Extroversion", persona.dna["extroversion"]),
+        ("Emotionality", persona.dna["emotionality"]),
+    ]
+    for i, (dna_lbl, val) in enumerate(dna_items):
+        yb = dna_y + i * 56
+        draw.text((bar_x, yb), dna_lbl, fill=(170, 170, 195), font=f_tiny)
+        pct = str(val) + "%"
+        pw = draw.textlength(pct, font=f_tiny)
+        draw.text((bar_x + bar_w - pw, yb), pct, fill=accent, font=f_tiny)
+        # Track
+        draw.rounded_rectangle([bar_x, yb+24, bar_x+bar_w, yb+40],
+                                radius=6, fill=(255,255,255,20))
+        # Fill
+        fw2 = int(bar_w * val / 100)
+        if fw2 > 0:
+            draw.rounded_rectangle([bar_x, yb+24, bar_x+fw2, yb+40],
+                                    radius=6, fill=accent)
+
+    # Artist sources note
+    if persona.artist_sources:
+        src_y = dna_y + 3 * 56 + 16
+        src_text = "Based on: " + ", ".join(persona.artist_sources)
+        sw = draw.textlength(src_text, font=f_tiny)
+        draw.text(((W-sw)//2, src_y), src_text, fill=(110,110,135), font=f_tiny)
+
+    # Footer
+    fy = H - pad - 38
+    draw.line([(cx-120, fy), (cx+120, fy)], fill=(255,255,255,30), width=1)
+    footer = "yourlifeasaplaylist.streamlit.app"
+    fw3 = draw.textlength(footer, font=f_tiny)
+    draw.text(((W-fw3)//2, fy+12), footer, fill=(100,100,125), font=f_tiny)
+
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", dpi=(144,144))
+    buf.seek(0)
+    return buf.getvalue()
+
 def render_persona_animation(persona_id):
     anim = PERSONA_ANIMATIONS.get(persona_id)
     if not anim:
@@ -829,33 +990,24 @@ elif st.session_state.step == "result":
 
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
 
-    # ── Shareable card ─────────────────────────────────────────────────────────
+    # ── Shareable card (downloadable PNG) ────────────────────────────────────────
     st.markdown('<div class="section-title">📸 Your shareable card</div>', unsafe_allow_html=True)
     st.markdown(
-        '<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">Screenshot this and share it!</p>',
+        '<p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:0.75rem;">'
+        'Download and share it anywhere.</p>',
         unsafe_allow_html=True
     )
-    st.markdown(
-        '<div style="background:linear-gradient(145deg,#0f0c29,' + persona.color + '55,#0f0c29);'
-        'border:2px solid ' + persona.color + '88;border-radius:24px;padding:2.5rem 2rem;'
-        'text-align:center;max-width:420px;margin:0 auto;">'
-        '<div style="font-size:0.75rem;letter-spacing:0.18em;text-transform:uppercase;'
-        'color:' + persona.color + ';margin-bottom:1rem;font-weight:600;">Your Life as a Playlist</div>'
-        '<div style="font-size:4rem;margin-bottom:0.5rem;">' + persona.emoji + '</div>'
-        '<div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;'
-        'color:' + persona.color + ';margin-bottom:0.75rem;line-height:1.2;">' + persona.name + '</div>'
-        '<div style="font-size:0.85rem;color:rgba(255,255,255,0.75);line-height:1.65;'
-        'margin-bottom:1.25rem;padding:0 0.5rem;">' + persona.description[:120] + '...</div>'
-        '<div style="background:rgba(0,0,0,0.3);border-radius:10px;padding:0.75rem 1rem;'
-        'margin-bottom:1.25rem;font-size:0.85rem;color:' + persona.color + ';">'
-        'Your anthem: ' + persona.anthem + '</div>'
-        '<div style="font-size:0.75rem;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;">'
-        + persona.get_traits_string() + '</div>'
-        + artist_note +
-        '<div style="margin-top:1rem;font-size:0.7rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;">'
-        'yourlifeasaplaylist.streamlit.app</div>'
-        '</div>',
-        unsafe_allow_html=True
+
+    card_bytes = generate_persona_card(persona)
+    card_img = Image.open(io.BytesIO(card_bytes))
+    st.image(card_img, use_container_width=True)
+
+    st.download_button(
+        label="⬇️ Download your card",
+        data=card_bytes,
+        file_name="my-music-persona-" + persona.persona_id + ".png",
+        mime="image/png",
+        use_container_width=True,
     )
 
     # ── Music DNA ──────────────────────────────────────────────────────────────
