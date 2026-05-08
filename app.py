@@ -480,28 +480,20 @@ def clean_text(text):
     return text
 
 def render_emoji_img(emoji_char, target_size=88):
-    """Render a single emoji to an RGBA PIL Image using NotoColorEmoji."""
+    """Render emoji using NotoColorEmoji. Size 109 is the only valid size, no RAQM needed."""
     font_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
     if not os.path.exists(font_path):
         return None
-    attempts = []
     try:
-        attempts.append({"size": 109, "layout_engine": ImageFont.Layout.RAQM})
+        font = ImageFont.truetype(font_path, 109)
+        tmp = Image.new("RGBA", (250, 250), (0, 0, 0, 0))
+        d = ImageDraw.Draw(tmp)
+        d.text((10, 10), emoji_char, font=font, embedded_color=True)
+        bbox = tmp.getbbox()
+        if bbox and (bbox[2] - bbox[0]) > 4:
+            return tmp.crop(bbox).resize((target_size, target_size), Image.LANCZOS)
     except Exception:
         pass
-    attempts += [{"size": 109}, {"size": 72}, {"size": 64}]
-    for kw in attempts:
-        try:
-            font = ImageFont.truetype(font_path, **kw)
-            canvas_size = kw["size"] * 2
-            tmp = Image.new("RGBA", (canvas_size, canvas_size), (0, 0, 0, 0))
-            d = ImageDraw.Draw(tmp)
-            d.text((kw["size"] // 4, kw["size"] // 4), emoji_char, font=font, embedded_color=True)
-            bbox = tmp.getbbox()
-            if bbox and (bbox[2] - bbox[0]) > 4 and (bbox[3] - bbox[1]) > 4:
-                return tmp.crop(bbox).resize((target_size, target_size), Image.LANCZOS)
-        except Exception:
-            continue
     return None
 
 def generate_persona_card(persona):
@@ -762,14 +754,14 @@ data = get_data()
 
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Your Music Taste Has a Signature.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Find out which music persona you actually are.</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">12</div><div class="intro-stat-label">possible personas</div></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="intro-stat"><div class="intro-stat-num">12</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="intro-stat"><div class="intro-stat-num">11</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
     with c3:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">1000+</div><div class="intro-stat-label">artists in our database</div></div>', unsafe_allow_html=True)
 
@@ -806,9 +798,9 @@ elif st.session_state.step == "artists":
     </div>
     """, unsafe_allow_html=True)
 
-    artist1 = st.text_input("Artist #1", placeholder="e.g. Tame Impala")
+    artist1 = st.text_input("Artist #1", placeholder="e.g. Amr Diab")
     artist2 = st.text_input("Artist #2 (optional)", placeholder="e.g. Kendrick Lamar")
-    artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Rosalia")
+    artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Lorde")
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Next — Take the quiz →", use_container_width=True):
