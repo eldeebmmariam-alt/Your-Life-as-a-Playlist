@@ -559,13 +559,13 @@ def generate_persona_card(persona):
     poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
     lora        = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
-    f_label  = try_font(poppins, 15)
+    f_label  = try_font(poppins, 20)
     f_name   = try_font(lora, 58)
-    f_name_s = try_font(lora, 44)
-    f_body   = try_font(poppins_reg, 24)
-    f_traits = try_font(poppins_med, 22)
-    f_small  = try_font(poppins_reg, 19)
-    f_tiny   = try_font(poppins_reg, 16)
+    f_name_s = try_font(lora, 46)
+    f_body   = try_font(poppins_reg, 30)
+    f_traits = try_font(poppins_med, 24)
+    f_small  = try_font(poppins_reg, 22)
+    f_tiny   = try_font(poppins_reg, 18)
 
     cx = W // 2
     MUTED = (190, 190, 210, 255)
