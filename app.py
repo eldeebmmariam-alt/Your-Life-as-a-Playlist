@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import time
 import io
-import os
+import urllib.request
 from PIL import Image, ImageDraw, ImageFont
 
 # ============================================================
@@ -480,21 +480,37 @@ def clean_text(text):
     return text
 
 def render_emoji_img(emoji_char, target_size=88):
-    """Render emoji using NotoColorEmoji. Size 109 is the only valid size, no RAQM needed."""
-    font_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
-    if not os.path.exists(font_path):
-        return None
+    """
+    Render emoji as an image using OpenMoji PNG assets.
+    This avoids relying on local emoji fonts / RAQM on Streamlit Cloud.
+    """
+
+    # Remove variation selector FE0F because OpenMoji filenames usually omit it
+    clean = emoji_char.replace("\ufe0f", "")
+
+    # Convert emoji to OpenMoji-style codepoint filename
+    codepoints = []
+    for ch in clean:
+        cp = f"{ord(ch):X}"
+        if cp != "FE0F":
+            codepoints.append(cp)
+
+    filename = "-".join(codepoints) + ".png"
+
+    # OpenMoji color PNG CDN
+    url = f"https://cdn.jsdelivr.net/gh/hfg-gmuend/openmoji@15.1.0/color/618x618/{filename}"
+
     try:
-        font = ImageFont.truetype(font_path, 109)
-        tmp = Image.new("RGBA", (250, 250), (0, 0, 0, 0))
-        d = ImageDraw.Draw(tmp)
-        d.text((10, 10), emoji_char, font=font, embedded_color=True)
-        bbox = tmp.getbbox()
-        if bbox and (bbox[2] - bbox[0]) > 4:
-            return tmp.crop(bbox).resize((target_size, target_size), Image.LANCZOS)
+        with urllib.request.urlopen(url, timeout=5) as response:
+            img_bytes = response.read()
+
+        emoji_img = Image.open(io.BytesIO(img_bytes)).convert("RGBA")
+        emoji_img = emoji_img.resize((target_size, target_size), Image.LANCZOS)
+        return emoji_img
+
     except Exception:
-        pass
-    return None
+        # Fallback: return None so the card still generates
+        return None
 
 def generate_persona_card(persona):
     """Generate a downloadable PNG result card."""
@@ -560,20 +576,21 @@ def generate_persona_card(persona):
     card_anthem = clean_text(persona.anthem)
     card_traits = [clean_text(t) for t in persona.traits]
 
-    lbl = "YOUR LIFE AS A PLAYLIST"
+    lbl = "SoundPrint"
     lw = draw.textlength(lbl, font=f_label)
     draw.text(((W-lw)//2, 100), lbl, fill=(*accent, 200), font=f_label)
     draw.line([(cx-70, 136), (cx+70, 136)], fill=(*accent, 70), width=1)
 
-    emoji_img = render_emoji_img(persona.emoji, target_size=88)
-    emoji_y = 158
+    emoji_img = render_emoji_img(persona.emoji, target_size=96)
+    emoji_y = 155
     if emoji_img:
-        img.paste(emoji_img, ((W - emoji_img.width) // 2, emoji_y), emoji_img)
-        name_y = emoji_y + emoji_img.height + 18
+        ex = (W - emoji_img.width) // 2
+        img.paste(emoji_img, (ex, emoji_y), emoji_img)
+        name_y = emoji_y + emoji_img.height + 22
     else:
-        draw.text((cx-20, emoji_y+10), persona.emoji, fill=(*accent, 200), font=f_name_s)
-        name_y = emoji_y + 96
-
+        # Clean fallback: do not draw broken emoji text
+        name_y = emoji_y + 90
+        
     name_font = f_name
     nw = draw.textlength(card_name, font=name_font)
     if nw > W - 160:
@@ -677,7 +694,7 @@ def restart():
 
 
 # ── Page config ────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="Your Life as a Playlist", page_icon="🎵", layout="centered")
+st.set_page_config(page_title="SoundPrint", page_icon="🎵", layout="centered")
 
 st.markdown("""
 <style>
@@ -754,7 +771,7 @@ data = get_data()
 
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Find out which music persona you actually are.</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
@@ -783,13 +800,13 @@ if st.session_state.step == "intro":
     </div>
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Let's find my sound →", use_container_width=True):
+    if st.button("Find my SoundPrint →", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
 
 # ── STEP 1: ARTISTS ────────────────────────────────────────────────────────────
 elif st.session_state.step == "artists":
-    st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint</div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="question-card">
@@ -798,9 +815,9 @@ elif st.session_state.step == "artists":
     </div>
     """, unsafe_allow_html=True)
 
-    artist1 = st.text_input("Artist #1", placeholder="e.g. Amr Diab")
-    artist2 = st.text_input("Artist #2 (optional)", placeholder="e.g. Kendrick Lamar")
-    artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Lorde")
+    artist1 = st.text_input("Artist #1", placeholder="e.g. Tame Impala")
+    artist2 = st.text_input("Artist #2 (optional)", placeholder="e.g. Rosalia")
+    artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Taylor Swift")
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Next — Take the quiz →", use_container_width=True):
@@ -830,7 +847,7 @@ elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
 
-    st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="step-badge">Step 2 of 2 — Question ' + str(q_idx+1) + ' of ' + str(total) + '</div>',
         unsafe_allow_html=True
@@ -863,7 +880,7 @@ elif st.session_state.step == "quiz":
 
 # ── LOADING ────────────────────────────────────────────────────────────────────
 elif st.session_state.step == "loading":
-    st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint</div>', unsafe_allow_html=True)
     messages = [
         ("🎧", "Analyzing your artists..."),
         ("✨", "Reading your playlist energy..."),
