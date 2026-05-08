@@ -3,6 +3,8 @@ import pandas as pd
 import time
 import io
 import html
+import os
+import tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 # ============================================================
@@ -821,6 +823,37 @@ def generate_persona_html_card(persona):
 
     return html_doc
 
+def generate_persona_card_png_from_html(persona):
+    """Render the styled HTML card to PNG bytes. Returns None if rendering fails."""
+    try:
+        from html2image import Html2Image
+
+        html_doc = generate_persona_html_card(persona)
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            html_path = os.path.join(tmp_dir, "persona_card.html")
+            png_name = "persona_card.png"
+            png_path = os.path.join(tmp_dir, png_name)
+
+            with open(html_path, "w", encoding="utf-8") as f:
+                f.write(html_doc)
+
+            hti = Html2Image(output_path=tmp_dir)
+            hti.screenshot(
+                html_file=html_path,
+                save_as=png_name,
+                size=(1000, 1400),
+            )
+
+            if os.path.exists(png_path):
+                with open(png_path, "rb") as f:
+                    return f.read()
+
+    except Exception:
+        return None
+
+    return None
+
 def render_persona_animation(persona_id):
     anim = PERSONA_ANIMATIONS.get(persona_id)
     if not anim:
@@ -1135,7 +1168,10 @@ elif st.session_state.step == "result":
 
     # ── 0. Download card (at top, collapsed by default) ──────────────────────
     with st.expander("📸 Download your result card"):
-        card_bytes = generate_persona_card(persona)
+        card_bytes = generate_persona_card_png_from_html(persona)
+        if card_bytes is None:
+            card_bytes = generate_persona_card(persona)
+            st.caption("Using fallback PNG card style (HTML-to-PNG renderer not available on this machine).")
         card_img = Image.open(io.BytesIO(card_bytes))
         st.image(card_img, use_container_width=True)
         st.download_button(
@@ -1145,15 +1181,6 @@ elif st.session_state.step == "result":
             mime="image/png",
             use_container_width=True,
             key="dl_top",
-        )
-        html_card = generate_persona_html_card(persona)
-        st.download_button(
-            label="⬇️ Download HTML Card",
-            data=html_card.encode("utf-8"),
-            file_name="my-music-persona-" + persona.persona_id + ".html",
-            mime="text/html",
-            use_container_width=True,
-            key="dl_top_html",
         )
 
     # ── 1. Beautiful HTML result card ─────────────────────────────────────────
