@@ -769,7 +769,7 @@ if st.session_state.step == "intro":
     with c1:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">12</div><div class="intro-stat-label">possible personas</div></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="intro-stat"><div class="intro-stat-num">11</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="intro-stat"><div class="intro-stat-num">12</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
     with c3:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">1000+</div><div class="intro-stat-label">artists in our database</div></div>', unsafe_allow_html=True)
 
