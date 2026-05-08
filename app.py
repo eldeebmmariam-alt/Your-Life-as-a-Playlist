@@ -987,7 +987,7 @@ elif st.session_state.step == "result":
     if persona.artist_sources:
         artist_note = '<p style="opacity:0.6;font-size:0.82rem;margin-top:1.2rem;">Based on: ' + ", ".join(persona.artist_sources) + ' — combined with your quiz answers.</p>'
 
-    st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Result 🎵</div>', unsafe_allow_html=True)
 
     # 0. Download card expander at top
     with st.expander("📸 Download your result card"):
