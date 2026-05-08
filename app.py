@@ -884,8 +884,8 @@ data = get_data()
 
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Find out which music persona you actually are.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Your music taste has a signature.</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1:
