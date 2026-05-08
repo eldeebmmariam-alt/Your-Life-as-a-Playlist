@@ -532,7 +532,7 @@ def generate_persona_card(persona):
         if line: lines.append(line)
         return lines
 
-    W, H = 900, 1120
+    W, H = 1080, 1400
     accent = hex_to_rgb(persona.color)
     bg_dark, bg_mid = (15, 12, 41), (48, 43, 99)
 
@@ -559,9 +559,11 @@ def generate_persona_card(persona):
     poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
     lora        = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
-    f_label  = try_font(poppins, 20)
+    f_label  = try_font(poppins, 22)
+    f_brand   = try_font(lora, 58)
+    f_tagline = try_font(poppins_reg, 18)
     f_name   = try_font(lora, 58)
-    f_name_s = try_font(lora, 46)
+    f_name_s = try_font(lora, 44)
     f_body   = try_font(poppins_reg, 30)
     f_traits = try_font(poppins_med, 24)
     f_small  = try_font(poppins_reg, 22)
@@ -576,17 +578,38 @@ def generate_persona_card(persona):
     card_anthem = clean_text(persona.anthem)
     card_traits = [clean_text(t) for t in persona.traits]
 
-    lbl = "SoundPrint"
-    lw = draw.textlength(lbl, font=f_label)
-    draw.text(((W-lw)//2, 100), lbl, fill=(*accent, 200), font=f_label)
-    draw.line([(cx-70, 136), (cx+70, 136)], fill=(*accent, 70), width=1)
+    # ── Brand mark ─────────────────────────────────────────────
+brand = "SoundPrint"
+tagline = "YOUR MUSIC TASTE HAS A SIGNATURE"
+
+brand_w = draw.textlength(brand, font=f_brand)
+draw.text(
+    ((W - brand_w) // 2, 80),
+    brand,
+    fill=WHITE,
+    font=f_brand
+)
+
+tagline_w = draw.textlength(tagline, font=f_tagline)
+draw.text(
+    ((W - tagline_w) // 2, 150),
+    tagline,
+    fill=(*accent, 210),
+    font=f_tagline
+)
+
+draw.line(
+    [(cx - 140, 190), (cx + 140, 190)],
+    fill=(*accent, 120),
+    width=2
+)
 
     emoji_img = render_emoji_img(persona.emoji, target_size=96)
-    emoji_y = 155
+    emoji_y = 225
     if emoji_img:
         ex = (W - emoji_img.width) // 2
         img.paste(emoji_img, (ex, emoji_y), emoji_img)
-        name_y = emoji_y + emoji_img.height + 22
+        name_y = emoji_y + emoji_img.height + 28
     else:
         # Clean fallback: do not draw broken emoji text
         name_y = emoji_y + 90
