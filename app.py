@@ -2,13 +2,14 @@ import streamlit as st
 import pandas as pd
 import time
 import io
+import html
 from PIL import Image, ImageDraw, ImageFont
- 
+
 # ============================================================
 # TOPIC 1 — DATA STRUCTURES & EXPRESSIONS
 # Covers: dictionaries, lists, string expressions
 # ============================================================
- 
+
 PERSONA_DETAILS = {
     "the-life-of-the-party": {
         "name": "The Life of the Party",
@@ -206,7 +207,7 @@ PERSONA_DETAILS = {
         ],
     },
 }
- 
+
 GENRE_TO_PERSONA = {
     "Pop": "the-life-of-the-party",
     "Dance": "the-life-of-the-party",
@@ -258,7 +259,7 @@ GENRE_TO_PERSONA = {
     "Electronic": "the-trendsetter",
     "UK Rap": "the-trendsetter",
 }
- 
+
 QUIZ_QUESTIONS = [
     {
         "question": "Be honest — what does your Spotify Wrapped say about you?",
@@ -360,7 +361,7 @@ QUIZ_QUESTIONS = [
         ]
     },
 ]
- 
+
 GENRE_PROFILES = {
     "Rock":        {"energy": 3, "extroversion": 2, "emotionality": 1},
     "Rock/Pop":    {"energy": 2, "extroversion": 3, "emotionality": 2},
@@ -376,7 +377,7 @@ GENRE_PROFILES = {
     "Folk":        {"energy": 1, "extroversion": 1, "emotionality": 3},
     "Latin":       {"energy": 3, "extroversion": 3, "emotionality": 2},
 }
- 
+
 PERSONA_ANIMATIONS = {
     "the-life-of-the-party": {"items": ["🎉","✨","🎊","✨","🎉","🥳","🎊","✨","🎉"], "anim": "partyFall", "dir": "top"},
     "the-main-character":    {"items": ["⭐","✨","🌟","✨","⭐","🌟","✨","⭐","🌟"], "anim": "mainTwinkle", "dir": "fixed"},
@@ -392,12 +393,12 @@ PERSONA_ANIMATIONS = {
     "the-rebel":             {"items": ["⚡","🔥","🎸","⚡","🔥","🎸","⚡","🔥","🎸"], "anim": "rebelCrash", "dir": "top"},
     "the-trendsetter":       {"items": ["✨","🚀","💿","⚡","✨","🪩","🚀","✨","💿"], "anim": "trendRise", "dir": "bottom"},
 }
- 
+
 POSITIONS = [
     ("8%","6%"),("15%","82%"),("28%","18%"),("44%","72%"),("60%","35%"),
     ("72%","88%"),("38%","55%"),("82%","20%"),("50%","92%")
 ]
- 
+
 # ============================================================
 # TOPIC 1 — PERSON 1: DATA LOADING
 # ============================================================
@@ -412,7 +413,7 @@ def load_artist_data(filepath):
             "country": str(row["Country"]).strip(),
         }
     return artist_data
- 
+
 # ============================================================
 # TOPIC 2 — FLOW CONTROL: PERSON 2 SEARCH LOGIC
 # ============================================================
@@ -430,14 +431,14 @@ def search_artist(name, data):
         return f"Artist not found. Did you mean: {', '.join(possible_matches[:5])}?"
     else:
         return "Artist not found. Please try again."
- 
+
 # ============================================================
 # TOPIC 3 — FUNCTIONS: PERSON 3 CORE LOGIC
 # ============================================================
 def load_data(filepath):
     """Function 1: Load and return the artist database."""
     return load_artist_data(filepath)
- 
+
 def get_artist_info_safe(artist_name, data):
     """Function 2: Return artist info dict or an error string."""
     result = search_artist(artist_name, data)
@@ -445,7 +446,7 @@ def get_artist_info_safe(artist_name, data):
         return result
     else:
         return {"error": result}
- 
+
 def build_user_profile(artist_names, data):
     """Function 3: Build a personality profile from a list of artist names."""
     profile = {"energy": 0, "extroversion": 0, "emotionality": 0}
@@ -463,14 +464,14 @@ def build_user_profile(artist_names, data):
                 profile["extroversion"] += 1
                 profile["emotionality"] += 1
     return profile, found_count
- 
+
 def genre_to_persona_id(genre):
     """Function 4: Map a genre string to a persona ID."""
     for key, pid in GENRE_TO_PERSONA.items():
         if key.lower() in genre.lower():
             return pid
     return "the-free-spirit"
- 
+
 def merge_and_decide(artist_scores, quiz_scores):
     """Function 5: Combine artist scores (40%) and quiz scores (60%)."""
     all_ids = set(list(artist_scores.keys()) + list(quiz_scores.keys()))
@@ -483,12 +484,12 @@ def merge_and_decide(artist_scores, quiz_scores):
         return max(final, key=final.get)
     else:
         return "the-free-spirit"
- 
+
 def format_result(persona_id):
     """Function 6: Return a formatted result string."""
     p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
     return f"{p['emoji']} {p['name']}: {p['description']}"
- 
+
 # ============================================================
 # TOPIC 4 — CLASSES: PERSON 4 MusicPersona CLASS
 # ============================================================
@@ -507,11 +508,11 @@ class MusicPersona:
         self.dna            = p["dna"]
         self.recs           = p.get("recs", [])
         self.artist_sources = artist_names_found
- 
+
     def get_traits_string(self):
         """Method: returns traits joined as a readable string."""
         return " · ".join(self.traits)
- 
+
     def get_share_text(self):
         """Method: returns a copyable text summary for sharing."""
         lines = [
@@ -526,18 +527,19 @@ class MusicPersona:
             "Find yours at yourlifeasaplaylist.streamlit.app",
         ]
         return "\n".join(lines)
- 
+
     def __repr__(self):
         return f"MusicPersona(name={self.name!r}, persona_id={self.persona_id!r})"
- 
- 
+
+
 # ── Helper functions ───────────────────────────────────────────────────────────
 def render_emoji_img(emoji_char, target_size=88):
     """Render a single emoji to an RGBA PIL Image using NotoColorEmoji."""
-    import os
     font_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
+    import os
     if not os.path.exists(font_path):
         return None
+    # Try every available approach
     attempts = []
     try:
         attempts.append({"size": 109, "layout_engine": ImageFont.Layout.RAQM})
@@ -555,42 +557,27 @@ def render_emoji_img(emoji_char, target_size=88):
             bbox = tmp.getbbox()
             if bbox and (bbox[2] - bbox[0]) > 4 and (bbox[3] - bbox[1]) > 4:
                 cropped = tmp.crop(bbox)
-                return cropped.resize((target_size, target_size), Image.LANCZOS)
+                # Verify it has actual color content (not just grey/transparent)
+                pixels = list(cropped.getdata())
+                colored = sum(1 for p in pixels if len(p) == 4 and p[3] > 50
+                              and not (abs(p[0]-p[1]) < 10 and abs(p[1]-p[2]) < 10))
+                if colored > 10:
+                    return cropped.resize((target_size, target_size), Image.LANCZOS)
         except Exception:
             continue
     return None
- 
- 
-def clean_text(text):
-    """Replace unicode characters that may not render in PIL fonts."""
-    replacements = {
-        "—": "-",   # em dash
-        "–": "-",   # en dash
-        "‘": "'",   # left single quote
-        "’": "'",   # right single quote / apostrophe
-        "“": '"',   # left double quote
-        "”": '"',   # right double quote
-        "…": "...", # ellipsis
-        "é": "e",   # é
-        "è": "e",   # è
-        "à": "a",   # à
-        "ü": "u",   # ü
-    }
-    for char, replacement in replacements.items():
-        text = text.replace(char, replacement)
-    return text
- 
- 
+
+
 def generate_persona_card(persona):
     """Generate a downloadable PNG result card for the given MusicPersona."""
- 
+
     def hex_to_rgb(h):
         h = h.lstrip("#")
         return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
- 
+
     def blend(color, bg, alpha):
         return tuple(int(bg[i] * (1 - alpha) + color[i] * alpha) for i in range(3))
- 
+
     def wrap_text(draw, text, font, max_width):
         words = text.split()
         lines, line = [], ""
@@ -605,13 +592,13 @@ def generate_persona_card(persona):
         if line:
             lines.append(line)
         return lines
- 
+
     W, H = 900, 1120
     accent     = hex_to_rgb(persona.color)
     bg_dark    = (15, 12, 41)
     bg_mid     = (48, 43, 99)
     card_fill  = blend(accent, bg_dark, 0.14)
- 
+
     # ── Base canvas + gradient ─────────────────────────────────
     img = Image.new("RGBA", (W, H), bg_dark)
     draw = ImageDraw.Draw(img)
@@ -621,7 +608,7 @@ def generate_persona_card(persona):
         g = int(bg_dark[1]*(1-t) + bg_mid[1]*t)
         b = int(bg_dark[2]*(1-t) + bg_mid[2]*t)
         draw.line([(0, y), (W, y)], fill=(r, g, b, 255))
- 
+
     # ── Card rect ─────────────────────────────────────────────
     pad = 56
     draw.rounded_rectangle(
@@ -631,19 +618,19 @@ def generate_persona_card(persona):
     )
     # Accent top bar
     draw.rounded_rectangle([pad, pad, W-pad, pad+7], radius=3, fill=(*accent, 255))
- 
+
     # ── Fonts ─────────────────────────────────────────────────
     def try_font(path, size):
         try:
             return ImageFont.truetype(path, size)
         except Exception:
             return ImageFont.load_default()
- 
+
     poppins     = "/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf"
     poppins_reg = "/usr/share/fonts/truetype/google-fonts/Poppins-Regular.ttf"
     poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
     lora        = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
- 
+
     f_label  = try_font(poppins,     15)
     f_name   = try_font(lora,        58)
     f_name_s = try_font(lora,        44)
@@ -651,26 +638,20 @@ def generate_persona_card(persona):
     f_traits = try_font(poppins_med, 22)
     f_small  = try_font(poppins_reg, 19)
     f_tiny   = try_font(poppins_reg, 16)
- 
+
     cx = W // 2
     WHITE    = (255, 255, 255, 255)
     MUTED    = (190, 190, 210, 255)
     DIMMED   = (120, 120, 145, 255)
- 
-    # Clean all text to avoid font encoding issues
-    card_name   = clean_text(persona.name)
-    card_desc   = clean_text(persona.description)
-    card_anthem = clean_text(persona.anthem)
-    card_traits = [clean_text(t) for t in persona.traits]
- 
+
     # ── App label ─────────────────────────────────────────────
     lbl = "YOUR LIFE AS A PLAYLIST"
     lw  = draw.textlength(lbl, font=f_label)
     draw.text(((W-lw)//2, 100), lbl, fill=(*accent, 200), font=f_label)
- 
+
     # Thin divider
     draw.line([(cx-70, 136), (cx+70, 136)], fill=(*accent, 70), width=1)
- 
+
     # ── Emoji (composite RGBA) ────────────────────────────────
     emoji_img = render_emoji_img(persona.emoji, target_size=88)
     emoji_y   = 158
@@ -679,26 +660,24 @@ def generate_persona_card(persona):
         img.paste(emoji_img, (ex, emoji_y), emoji_img)
         name_y = emoji_y + emoji_img.height + 18
     else:
-        # Fallback: draw emoji as text using DejaVu
-        draw.text((cx - 20, emoji_y + 10), persona.emoji, fill=(*accent, 200), font=f_name_s)
         name_y = emoji_y + 96
- 
+
     # ── Persona name ──────────────────────────────────────────
     name_font = f_name
-    nw = draw.textlength(card_name, font=name_font)
+    nw = draw.textlength(persona.name, font=name_font)
     if nw > W - 160:
         name_font = f_name_s
-        nw = draw.textlength(card_name, font=name_font)
-    draw.text(((W-nw)//2, name_y), card_name, fill=(*accent, 255), font=name_font)
- 
+        nw = draw.textlength(persona.name, font=name_font)
+    draw.text(((W-nw)//2, name_y), persona.name, fill=(*accent, 255), font=name_font)
+
     # ── Description ───────────────────────────────────────────
     desc_y  = name_y + 74
-    lines   = wrap_text(draw, card_desc, f_body, W - 200)
+    lines   = wrap_text(draw, persona.description, f_body, W - 200)
     for line in lines[:5]:
         lw2 = draw.textlength(line, font=f_body)
         draw.text(((W-lw2)//2, desc_y), line, fill=MUTED, font=f_body)
         desc_y += 36
- 
+
     # ── Anthem box ────────────────────────────────────────────
     ay = desc_y + 24
     draw.rounded_rectangle(
@@ -707,16 +686,16 @@ def generate_persona_card(persona):
         fill=blend(accent, (0,0,0), 0.20) + (255,),
         outline=(*accent, 65), width=1
     )
-    anthem_str = "Your anthem:  " + card_anthem
+    anthem_str = "Your anthem:  " + persona.anthem
     aw = draw.textlength(anthem_str, font=f_small)
     draw.text(((W-aw)//2, ay+20), anthem_str, fill=(*accent, 230), font=f_small)
- 
+
     # ── Traits ────────────────────────────────────────────────
     traits_y   = ay + 94
-    traits_str = "  -  ".join(card_traits)
+    traits_str = "  ·  ".join(persona.traits)
     tw = draw.textlength(traits_str, font=f_traits)
     draw.text(((W-tw)//2, traits_y), traits_str, fill=MUTED, font=f_traits)
- 
+
     # ── DNA bars ──────────────────────────────────────────────
     dna_y  = traits_y + 64
     bar_x  = pad + 72
@@ -743,7 +722,7 @@ def generate_persona_card(persona):
             [bar_x, yb+24, bar_x+fw2, yb+40],
             radius=6, fill=(*accent, 255)
         )
- 
+
     # ── Artist source note ────────────────────────────────────
     note_y = dna_y + 3 * 56 + 10
     if persona.artist_sources:
@@ -751,21 +730,97 @@ def generate_persona_card(persona):
         sw  = draw.textlength(src, font=f_tiny)
         draw.text(((W-sw)//2, note_y), src, fill=DIMMED, font=f_tiny)
         note_y += 28
- 
+
     # ── Footer ────────────────────────────────────────────────
     fy = H - pad - 42
     draw.line([(cx-110, fy), (cx+110, fy)], fill=(255,255,255,28), width=1)
     footer = "yourlifeasaplaylist.streamlit.app"
     fw3    = draw.textlength(footer, font=f_tiny)
     draw.text(((W-fw3)//2, fy+13), footer, fill=DIMMED, font=f_tiny)
- 
+
     # ── Export ────────────────────────────────────────────────
     out = img.convert("RGB")
     buf = io.BytesIO()
     out.save(buf, format="PNG", dpi=(144, 144))
     buf.seek(0)
     return buf.getvalue()
- 
+
+def generate_persona_html_card(persona):
+    """Generate a standalone downloadable HTML result card."""
+    traits_html = "".join([
+        '<span class="trait-pill">' + html.escape(t) + '</span>' for t in persona.traits
+    ])
+    artists_html = "".join([
+        '<span class="artist-chip">♪ ' + html.escape(a) + '</span>' for a in persona.artists
+    ])
+
+    recs_html = ""
+    for rec in persona.recs:
+        recs_html += (
+            '<div class="rec">'
+            '<div class="rec-title">' + html.escape(rec["title"]) + '</div>'
+            '<div class="rec-artist">' + html.escape(rec["artist"]) + '</div>'
+            '<div class="rec-why">' + html.escape(rec["why"]) + '</div>'
+            '</div>'
+        )
+
+    artist_note = ""
+    if persona.artist_sources:
+        artist_note = (
+            '<p class="artist-note">Based on: '
+            + html.escape(", ".join(persona.artist_sources))
+            + ' — combined with your quiz answers.</p>'
+        )
+
+    html_doc = (
+        '<!doctype html>'
+        '<html>'
+        '<head>'
+        '<meta charset="utf-8" />'
+        '<meta name="viewport" content="width=device-width,initial-scale=1" />'
+        '<title>' + html.escape(persona.name) + ' - Music Persona</title>'
+        '<style>'
+        'body{font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;padding:24px;margin:0;}'
+        '.container{max-width:900px;margin:0 auto;}'
+        '.result-card{border-radius:24px;padding:2.2rem 2rem;text-align:center;margin:1rem 0;'
+        'background:linear-gradient(135deg,' + persona.color + '22,' + persona.color + '44);'
+        'border:2px solid ' + persona.color + '55;}'
+        '.result-emoji{font-size:4.5rem;display:block;margin-bottom:0.5rem;}'
+        '.result-name{font-family:"Playfair Display",Georgia,serif;font-size:2.4rem;font-weight:700;margin-bottom:1rem;color:' + persona.color + ';}'
+        '.result-desc{font-size:1.05rem;line-height:1.75;margin-bottom:1.2rem;opacity:0.92;}'
+        '.anthem-box{background:rgba(0,0,0,0.18);border-radius:12px;padding:0.9rem 1.4rem;margin-bottom:1.1rem;font-size:0.95rem;color:' + persona.color + ';}'
+        '.trait-pill{display:inline-block;background:rgba(0,0,0,0.15);border-radius:50px;padding:5px 16px;margin:4px;font-size:0.82rem;font-weight:500;}'
+        '.artist-note{opacity:0.65;font-size:0.82rem;margin-top:1.2rem;}'
+        '.section-title{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;color:white;margin:1.5rem 0 0.75rem 0;}'
+        '.artist-chip{display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:6px 16px;margin:4px;font-size:0.85rem;color:#e0e0e0;}'
+        '.recs-wrap{text-align:left;margin-top:0.5rem;}'
+        '.rec{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + persona.color + ';border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.6rem;}'
+        '.rec-title{font-weight:600;color:white;font-size:0.95rem;}'
+        '.rec-artist{color:' + persona.color + ';font-size:0.85rem;margin:2px 0 6px 0;}'
+        '.rec-why{color:rgba(255,255,255,0.55);font-size:0.82rem;font-style:italic;}'
+        '</style>'
+        '</head>'
+        '<body>'
+        '<div class="container">'
+        '<div class="result-card">'
+        '<span class="result-emoji">' + html.escape(persona.emoji) + '</span>'
+        '<div class="result-name">' + html.escape(persona.name) + '</div>'
+        '<div class="result-desc">' + html.escape(persona.description) + '</div>'
+        '<div class="anthem-box">🎶 Your anthem: <strong>' + html.escape(persona.anthem) + '</strong></div>'
+        '<div>' + traits_html + '</div>'
+        + artist_note +
+        '</div>'
+        '<div class="section-title">🎤 Artists you would vibe with</div>'
+        '<div>' + artists_html + '</div>'
+        '<div class="section-title">🎧 Songs you might not know yet</div>'
+        '<div class="recs-wrap">' + recs_html + '</div>'
+        '</div>'
+        '</body>'
+        '</html>'
+    )
+
+    return html_doc
+
 def render_persona_animation(persona_id):
     anim = PERSONA_ANIMATIONS.get(persona_id)
     if not anim:
@@ -796,7 +851,7 @@ def render_persona_animation(persona_id):
         + items_html + '</div>',
         unsafe_allow_html=True
     )
- 
+
 def dna_bar(label, value, color):
     """Helper: renders a single DNA progress bar as HTML."""
     return (
@@ -809,16 +864,16 @@ def dna_bar(label, value, color):
         '<div style="width:' + str(value) + '%;background:linear-gradient(90deg,' + color + '88,' + color + ');height:100%;border-radius:50px;"></div>'
         '</div></div>'
     )
- 
+
 def restart():
     """Helper: clears all session state to restart the quiz."""
     for key in list(st.session_state.keys()):
         del st.session_state[key]
- 
- 
+
+
 # ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Your Life as a Playlist", page_icon="🎵", layout="centered")
- 
+
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600&display=swap');
@@ -877,7 +932,7 @@ div[data-baseweb="input"] input::placeholder{color:rgba(26,26,46,0.4)!important;
 footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{visibility:hidden;}
 </style>
 """, unsafe_allow_html=True)
- 
+
 # ── Session state defaults ─────────────────────────────────────────────────────
 defaults = {
     "step": "intro",
@@ -890,18 +945,18 @@ defaults = {
 for k, v in defaults.items():
     if k not in st.session_state:
         st.session_state[k] = v
- 
+
 @st.cache_data
 def get_data():
     return load_data("database_artists.xlsx")
- 
+
 data = get_data()
- 
+
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
     st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Find out which music persona you actually are.</div>', unsafe_allow_html=True)
- 
+
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">13</div><div class="intro-stat-label">possible personas</div></div>', unsafe_allow_html=True)
@@ -909,7 +964,7 @@ if st.session_state.step == "intro":
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">10</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
     with c3:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">600+</div><div class="intro-stat-label">artists in our database</div></div>', unsafe_allow_html=True)
- 
+
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("""
     <div style="text-align:center;margin-bottom:1.5rem;">
@@ -918,7 +973,7 @@ if st.session_state.step == "intro":
         </span>
     </div>
     """, unsafe_allow_html=True)
- 
+
     st.markdown("""
     <div class="question-card" style="text-align:center;">
         <div style="font-size:1rem;color:rgba(255,255,255,0.75);line-height:1.8;">
@@ -928,30 +983,30 @@ if st.session_state.step == "intro":
         </div>
     </div>
     """, unsafe_allow_html=True)
- 
+
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Let's find my sound →", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
- 
+
 # ── STEP 1: ARTIST INPUT ──────────────────────────────────────────────────────
 elif st.session_state.step == "artists":
     st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
- 
+
     st.markdown("""
     <div class="question-card">
         <div class="question-text">Which artists define your soundtrack?</div>
         <div style="font-size:0.9rem;color:rgba(255,255,255,0.5);margin-top:0.5rem;">Enter up to 3. At least 1 is required.</div>
     </div>
     """, unsafe_allow_html=True)
- 
+
     artist1 = st.text_input("Artist #1", placeholder="e.g. Taylor Swift")
     artist2 = st.text_input("Artist #2 (optional)", placeholder="e.g. Kendrick Lamar")
     artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Adele")
- 
+
     st.markdown("<br>", unsafe_allow_html=True)
- 
+
     if st.button("Next — Take the quiz →", use_container_width=True):
         artists = [a for a in [artist1, artist2, artist3] if a.strip()]
         if not artists:
@@ -973,31 +1028,31 @@ elif st.session_state.step == "artists":
                 st.session_state.artist_names_found = found_names
                 st.session_state.step = "quiz"
                 st.rerun()
- 
+
 # ── STEP 2: QUIZ ──────────────────────────────────────────────────────────────
 elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
- 
+
     st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="step-badge">Step 2 of 2 — Question ' + str(q_idx + 1) + ' of ' + str(total) + '</div>',
         unsafe_allow_html=True
     )
- 
+
     dots = "".join([
         '<div class="dot ' + ("done" if i < q_idx else "active" if i == q_idx else "") + '"></div>'
         for i in range(total)
     ])
     st.markdown('<div class="progress-dots">' + dots + '</div>', unsafe_allow_html=True)
     st.progress(q_idx / total)
- 
+
     q = QUIZ_QUESTIONS[q_idx]
     st.markdown(
         '<div class="question-card"><div class="question-text">' + q["question"] + '</div></div>',
         unsafe_allow_html=True
     )
- 
+
     for i, (option_text, p1, p2) in enumerate(q["options"]):
         if st.button(option_text, key="q" + str(q_idx) + "_opt" + str(i), use_container_width=True):
             st.session_state.quiz_scores[p1] = st.session_state.quiz_scores.get(p1, 0) + 2
@@ -1007,23 +1062,23 @@ elif st.session_state.step == "quiz":
             else:
                 st.session_state.quiz_step += 1
             st.rerun()
- 
+
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Start over"):
         restart()
         st.rerun()
- 
+
 # ── LOADING SCREEN ────────────────────────────────────────────────────────────
 elif st.session_state.step == "loading":
     st.markdown('<div class="hero-title">🎵 Your Life<br>as a Playlist</div>', unsafe_allow_html=True)
- 
+
     messages = [
         ("🎧", "Analyzing your artists..."),
         ("✨", "Reading your playlist energy..."),
         ("🎼", "Matching your music personality..."),
         ("💿", "Revealing your identity..."),
     ]
- 
+
     placeholder = st.empty()
     for emoji, msg in messages:
         placeholder.markdown(
@@ -1038,46 +1093,46 @@ elif st.session_state.step == "loading":
             unsafe_allow_html=True
         )
         time.sleep(0.9)
- 
+
     placeholder.empty()
     st.session_state.step = "result"
     st.rerun()
- 
+
 # ── RESULT ────────────────────────────────────────────────────────────────────
 elif st.session_state.step == "result":
- 
+
     persona_id = merge_and_decide(
         st.session_state.artist_scores,
         st.session_state.quiz_scores
     )
- 
+
     persona = MusicPersona(
         persona_id=persona_id,
         artist_names_found=st.session_state.artist_names_found
     )
- 
+
     if not st.session_state.celebrated:
         if persona.persona_id in ("the-life-of-the-party", "the-hype-beast"):
             st.balloons()
         elif persona.persona_id == "the-daydreamer":
             st.snow()
         st.session_state.celebrated = True
- 
+
     render_persona_animation(persona.persona_id)
- 
+
     traits_html = "".join([
         '<span class="trait-pill">' + t + '</span>' for t in persona.traits
     ])
- 
+
     artist_note = ""
     if persona.artist_sources:
         artist_note = (
             '<p style="opacity:0.6;font-size:0.82rem;margin-top:1.2rem;">'
             'Based on: ' + ", ".join(persona.artist_sources) + ' — combined with your quiz answers.</p>'
         )
- 
+
     st.markdown('<div class="hero-title">🎵 Your Result</div>', unsafe_allow_html=True)
- 
+
     # ── 0. Download card (at top, collapsed by default) ──────────────────────
     with st.expander("📸 Download your result card"):
         card_bytes = generate_persona_card(persona)
@@ -1091,7 +1146,16 @@ elif st.session_state.step == "result":
             use_container_width=True,
             key="dl_top",
         )
- 
+        html_card = generate_persona_html_card(persona)
+        st.download_button(
+            label="⬇️ Download HTML Card",
+            data=html_card.encode("utf-8"),
+            file_name="my-music-persona-" + persona.persona_id + ".html",
+            mime="text/html",
+            use_container_width=True,
+            key="dl_top_html",
+        )
+
     # ── 1. Beautiful HTML result card ─────────────────────────────────────────
     st.markdown(
         '<div class="result-card" style="background:linear-gradient(135deg,'
@@ -1108,7 +1172,7 @@ elif st.session_state.step == "result":
         '</div>',
         unsafe_allow_html=True
     )
- 
+
     # ── 2. Music DNA ──────────────────────────────────────────────────────────
     st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
     st.markdown(
@@ -1120,14 +1184,14 @@ elif st.session_state.step == "result":
         + '</div>',
         unsafe_allow_html=True
     )
- 
+
     # ── 3. Artists you would vibe with ────────────────────────────────────────
     st.markdown('<div class="section-title">🎤 Artists you would vibe with</div>', unsafe_allow_html=True)
     artists_html = "".join([
         '<span class="artist-chip">♪ ' + a + '</span>' for a in persona.artists
     ])
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
- 
+
     # ── 4. Song recommendations ───────────────────────────────────────────────
     st.markdown('<div class="section-title">🎧 Songs you might not know yet</div>', unsafe_allow_html=True)
     st.markdown(
@@ -1146,10 +1210,9 @@ elif st.session_state.step == "result":
             '</div>',
             unsafe_allow_html=True
         )
- 
+
     # ── 5. Take it again ──────────────────────────────────────────────────────
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 Take it again", use_container_width=True):
         restart()
         st.rerun()
- 
