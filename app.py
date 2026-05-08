@@ -604,16 +604,17 @@ draw.line(
     width=2
 )
 
-    emoji_img = render_emoji_img(persona.emoji, target_size=96)
-    emoji_y = 225
-    if emoji_img:
-        ex = (W - emoji_img.width) // 2
-        img.paste(emoji_img, (ex, emoji_y), emoji_img)
-        name_y = emoji_y + emoji_img.height + 28
-    else:
-        # Clean fallback: do not draw broken emoji text
-        name_y = emoji_y + 90
-        
+emoji_img = render_emoji_img(persona.emoji, target_size=96)
+emoji_y = 225
+
+if emoji_img:
+    ex = (W - emoji_img.width) // 2
+    img.paste(emoji_img, (ex, emoji_y), emoji_img)
+    name_y = emoji_y + emoji_img.height + 28
+else:
+    # Clean fallback: do not draw broken emoji text
+    name_y = emoji_y + 90
+    
     name_font = f_name
     nw = draw.textlength(card_name, font=name_font)
     if nw > W - 160:
