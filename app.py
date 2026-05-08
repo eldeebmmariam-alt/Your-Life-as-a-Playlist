@@ -514,161 +514,202 @@ def render_emoji_img(emoji_char, target_size=88):
 
 def generate_persona_card(persona):
     """Generate a downloadable PNG result card."""
+
     def hex_to_rgb(h):
         h = h.lstrip("#")
         return tuple(int(h[i:i+2], 16) for i in (0, 2, 4))
+
     def blend(color, bg, alpha):
-        return tuple(int(bg[i] * (1-alpha) + color[i] * alpha) for i in range(3))
+        return tuple(int(bg[i] * (1 - alpha) + color[i] * alpha) for i in range(3))
+
     def wrap_text(draw, text, font, max_width):
-        words = text.split()
+        words = clean_text(str(text)).split()
         lines, line = [], ""
         for w in words:
             test = (line + " " + w).strip()
-            if draw.textlength(test, font=font) < max_width:
+            if draw.textlength(test, font=font) <= max_width:
                 line = test
             else:
-                if line: lines.append(line)
+                if line:
+                    lines.append(line)
                 line = w
-        if line: lines.append(line)
+        if line:
+            lines.append(line)
         return lines
+
+    def try_font(path, size):
+        try:
+            return ImageFont.truetype(path, size)
+        except Exception:
+            return ImageFont.load_default()
 
     W, H = 1080, 1400
     accent = hex_to_rgb(persona.color)
-    bg_dark, bg_mid = (15, 12, 41), (48, 43, 99)
+    bg_dark = (15, 12, 41)
+    bg_mid = (48, 43, 99)
 
     img = Image.new("RGBA", (W, H), bg_dark)
     draw = ImageDraw.Draw(img)
+
+    # Background gradient
     for y in range(H):
         t = y / H
         draw.line([(0, y), (W, y)], fill=(
-            int(bg_dark[0]*(1-t)+bg_mid[0]*t),
-            int(bg_dark[1]*(1-t)+bg_mid[1]*t),
-            int(bg_dark[2]*(1-t)+bg_mid[2]*t), 255))
+            int(bg_dark[0] * (1 - t) + bg_mid[0] * t),
+            int(bg_dark[1] * (1 - t) + bg_mid[1] * t),
+            int(bg_dark[2] * (1 - t) + bg_mid[2] * t),
+            255
+        ))
 
     pad = 56
-    draw.rounded_rectangle([pad, pad, W-pad, H-pad], radius=32,
-        fill=(*blend(accent, bg_dark, 0.14), 255), outline=(*accent, 110), width=2)
-    draw.rounded_rectangle([pad, pad, W-pad, pad+7], radius=3, fill=(*accent, 255))
+    card_fill = blend(accent, bg_dark, 0.14)
+    draw.rounded_rectangle(
+        [pad, pad, W - pad, H - pad],
+        radius=36,
+        fill=(*card_fill, 255),
+        outline=(*accent, 130),
+        width=3
+    )
+    draw.rounded_rectangle([pad, pad, W - pad, pad + 8], radius=4, fill=(*accent, 255))
 
-    def try_font(path, size):
-        try: return ImageFont.truetype(path, size)
-        except: return ImageFont.load_default()
-
-    poppins     = "/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf"
+    # Fonts
+    poppins = "/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf"
     poppins_reg = "/usr/share/fonts/truetype/google-fonts/Poppins-Regular.ttf"
     poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
-    lora        = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
+    lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
-    f_label  = try_font(poppins, 22)
-    f_brand   = try_font(lora, 58)
-    f_tagline = try_font(poppins_reg, 18)
-    f_name   = try_font(lora, 58)
-    f_name_s = try_font(lora, 44)
-    f_body   = try_font(poppins_reg, 30)
-    f_traits = try_font(poppins_med, 24)
-    f_small  = try_font(poppins_reg, 22)
-    f_tiny   = try_font(poppins_reg, 18)
+    f_brand = try_font(lora, 70)
+    f_tagline = try_font(poppins_reg, 22)
+    f_name = try_font(lora, 62)
+    f_name_s = try_font(lora, 48)
+    f_body = try_font(poppins_reg, 32)
+    f_traits = try_font(poppins_med, 26)
+    f_small = try_font(poppins_reg, 24)
+    f_tiny = try_font(poppins_reg, 21)
 
     cx = W // 2
-    MUTED = (190, 190, 210, 255)
-    DIMMED = (120, 120, 145, 255)
+    WHITE = (255, 255, 255, 255)
+    MUTED = (210, 210, 230, 255)
+    DIMMED = (150, 150, 175, 255)
 
-    card_name   = clean_text(persona.name)
-    card_desc   = clean_text(persona.description)
+    card_name = clean_text(persona.name)
+    card_desc = clean_text(persona.description)
     card_anthem = clean_text(persona.anthem)
     card_traits = [clean_text(t) for t in persona.traits]
 
-    # ── Brand mark ─────────────────────────────────────────────
+    # Brand mark
     brand = "SoundPrint"
     tagline = "YOUR MUSIC TASTE HAS A SIGNATURE"
 
     brand_w = draw.textlength(brand, font=f_brand)
-    draw.text(
-        ((W - brand_w) // 2, 80),
-        brand,
-        fill=WHITE,
-        font=f_brand
-    )
+    draw.text(((W - brand_w) // 2, 84), brand, fill=WHITE, font=f_brand)
 
     tagline_w = draw.textlength(tagline, font=f_tagline)
-    draw.text(
-        ((W - tagline_w) // 2, 150),
-        tagline,
-        fill=(*accent, 210),
-        font=f_tagline
-    )
+    draw.text(((W - tagline_w) // 2, 165), tagline, fill=(*accent, 230), font=f_tagline)
 
-    draw.line(
-        [(cx - 140, 190), (cx + 140, 190)],
-        fill=(*accent, 120),
-        width=2
-    )
+    draw.line([(cx - 150, 210), (cx + 150, 210)], fill=(*accent, 150), width=3)
 
-    emoji_img = render_emoji_img(persona.emoji, target_size=96)
-    emoji_y = 225
-
+    # Emoji image
+    emoji_img = render_emoji_img(persona.emoji, target_size=118)
+    emoji_y = 248
     if emoji_img:
         ex = (W - emoji_img.width) // 2
         img.paste(emoji_img, (ex, emoji_y), emoji_img)
-        name_y = emoji_y + emoji_img.height + 28
+        name_y = emoji_y + emoji_img.height + 34
     else:
-        # Clean fallback: do not draw broken emoji text
-        name_y = emoji_y + 90
+        name_y = emoji_y + 118
 
-        name_font = f_name
+    # Persona name
+    name_font = f_name
+    nw = draw.textlength(card_name, font=name_font)
+    if nw > W - 160:
+        name_font = f_name_s
         nw = draw.textlength(card_name, font=name_font)
-        if nw > W - 160:
-            name_font = f_name_s
-            nw = draw.textlength(card_name, font=name_font)
-        draw.text(((W-nw)//2, name_y), card_name, fill=(*accent, 255), font=name_font)
+    draw.text(((W - nw) // 2, name_y), card_name, fill=(*accent, 255), font=name_font)
 
-        desc_y = name_y + 74
-        for line in wrap_text(draw, card_desc, f_body, W-200)[:5]:
-            lw2 = draw.textlength(line, font=f_body)
-            draw.text(((W-lw2)//2, desc_y), line, fill=MUTED, font=f_body)
-            desc_y += 36
+    # Description
+    desc_y = name_y + 90
+    desc_lines = wrap_text(draw, card_desc, f_body, W - 210)[:4]
+    for line in desc_lines:
+        lw = draw.textlength(line, font=f_body)
+        draw.text(((W - lw) // 2, desc_y), line, fill=MUTED, font=f_body)
+        desc_y += 44
 
-        ay = desc_y + 24
-        draw.rounded_rectangle([pad+44, ay, W-pad-44, ay+66], radius=14,
-            fill=(*blend(accent, (0,0,0), 0.20), 255), outline=(*accent, 65), width=1)
-        anthem_str = "Your anthem:  " + card_anthem
-        aw = draw.textlength(anthem_str, font=f_small)
-        draw.text(((W-aw)//2, ay+20), anthem_str, fill=(*accent, 230), font=f_small)
+    # Anthem box
+    ay = desc_y + 36
+    box_h = 94
+    draw.rounded_rectangle(
+        [pad + 52, ay, W - pad - 52, ay + box_h],
+        radius=18,
+        fill=(*blend(accent, (0, 0, 0), 0.22), 255),
+        outline=(*accent, 95),
+        width=2
+    )
+    anthem_str = "Your anthem:  " + card_anthem
+    aw = draw.textlength(anthem_str, font=f_small)
+    draw.text(((W - aw) // 2, ay + 32), anthem_str, fill=(*accent, 245), font=f_small)
 
-        ty = ay + 94
-        traits_str = "  -  ".join(card_traits)
-        tw = draw.textlength(traits_str, font=f_traits)
-        draw.text(((W-tw)//2, ty), traits_str, fill=MUTED, font=f_traits)
+    # Traits
+    ty = ay + box_h + 48
+    traits_str = "  -  ".join(card_traits)
+    traits_font = f_traits
+    tw = draw.textlength(traits_str, font=traits_font)
+    if tw > W - 160:
+        traits_font = f_tiny
+        tw = draw.textlength(traits_str, font=traits_font)
+    draw.text(((W - tw) // 2, ty), traits_str, fill=MUTED, font=traits_font)
 
-        dna_y = ty + 68
-        bar_x, bar_w = pad + 72, W - (pad + 72) * 2
-        for i, (lbl2, val) in enumerate([("Energy", persona.dna["energy"]), ("Extroversion", persona.dna["extroversion"]), ("Emotionality", persona.dna["emotionality"])]):
-            yb = dna_y + i * 56
-            draw.text((bar_x, yb), lbl2, fill=DIMMED, font=f_tiny)
-            pct = str(val) + "%"
-            pw = draw.textlength(pct, font=f_tiny)
-            draw.text((bar_x + bar_w - pw, yb), pct, fill=(*accent, 220), font=f_tiny)
-            draw.rounded_rectangle([bar_x, yb+24, bar_x+bar_w, yb+40], radius=6, fill=(255,255,255,22))
-            fw2 = max(12, int(bar_w * val / 100))
-            draw.rounded_rectangle([bar_x, yb+24, bar_x+fw2, yb+40], radius=6, fill=(*accent, 255))
+    # DNA bars
+    dna_y = ty + 78
+    bar_x = pad + 92
+    bar_w = W - (pad + 92) * 2
+    bar_gap = 82
+    bar_h = 22
 
-        note_y = dna_y + 3*56 + 10
-        if persona.artist_sources:
-            src = "Based on: " + ", ".join(persona.artist_sources)
-            sw = draw.textlength(src, font=f_tiny)
-            draw.text(((W-sw)//2, note_y), src, fill=DIMMED, font=f_tiny)
+    dna_items = [
+        ("Energy", persona.dna["energy"]),
+        ("Extroversion", persona.dna["extroversion"]),
+        ("Emotionality", persona.dna["emotionality"]),
+    ]
 
-        fy = H - pad - 42
-        draw.line([(cx-110, fy), (cx+110, fy)], fill=(255,255,255,28), width=1)
+    for i, (label, val) in enumerate(dna_items):
+        yb = dna_y + i * bar_gap
+        draw.text((bar_x, yb), label, fill=DIMMED, font=f_tiny)
+        pct = str(val) + "%"
+        pw = draw.textlength(pct, font=f_tiny)
+        draw.text((bar_x + bar_w - pw, yb), pct, fill=(*accent, 235), font=f_tiny)
 
-        footer = "yourlifeasaplaylist.streamlit.app"
-        fw3 = draw.textlength(footer, font=f_tiny)
-        draw.text(((W-fw3)//2, fy+13), footer, fill=DIMMED, font=f_tiny)
+        track_y = yb + 34
+        draw.rounded_rectangle(
+            [bar_x, track_y, bar_x + bar_w, track_y + bar_h],
+            radius=10,
+            fill=(255, 255, 255, 35)
+        )
+        fill_w = max(16, int(bar_w * val / 100))
+        draw.rounded_rectangle(
+            [bar_x, track_y, bar_x + fill_w, track_y + bar_h],
+            radius=10,
+            fill=(*accent, 255)
+        )
 
-        buf = io.BytesIO()
-        img.convert("RGB").save(buf, format="PNG", dpi=(144,144))
-        buf.seek(0)
-        return buf.getvalue()
+    # Based-on note
+    note_y = dna_y + 3 * bar_gap + 20
+    if persona.artist_sources:
+        src = "Based on: " + ", ".join([clean_text(a) for a in persona.artist_sources])
+        sw = draw.textlength(src, font=f_tiny)
+        draw.text(((W - sw) // 2, note_y), src, fill=DIMMED, font=f_tiny)
+
+    # Footer
+    fy = H - pad - 54
+    draw.line([(cx - 130, fy), (cx + 130, fy)], fill=(255, 255, 255, 45), width=2)
+    footer = "soundprint.streamlit.app"
+    fw = draw.textlength(footer, font=f_tiny)
+    draw.text(((W - fw) // 2, fy + 18), footer, fill=DIMMED, font=f_tiny)
+
+    buf = io.BytesIO()
+    img.convert("RGB").save(buf, format="PNG", dpi=(144, 144))
+    buf.seek(0)
+    return buf.getvalue()
 
 def render_persona_animation(persona_id):
     anim = PERSONA_ANIMATIONS.get(persona_id)
