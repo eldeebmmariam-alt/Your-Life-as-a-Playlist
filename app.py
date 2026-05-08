@@ -578,10 +578,10 @@ def generate_persona_card(persona):
     poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
     lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
-    f_brand = try_font(poppins_reg, 76)
+    f_brand = try_font(poppins_reg, 82)
     f_tagline = try_font(poppins_reg, 22)
-    f_name = try_font(lora, 62)
-    f_name_s = try_font(lora, 48)
+    f_name = try_font(lora, 80)
+    f_name_s = try_font(lora, 78)
     f_body = try_font(poppins_reg, 48)
     f_traits = try_font(poppins_med, 28)
     f_small = try_font(poppins_reg, 38)
@@ -607,7 +607,7 @@ def generate_persona_card(persona):
     tagline_w = draw.textlength(tagline, font=f_tagline)
     draw.text(((W - tagline_w) // 2, 155), tagline, fill=(*accent, 230), font=f_tagline)
 
-    draw.line([(cx - 170, 205), (cx + 170, 205)], fill=(*accent, 170), width=3)
+    draw.line([(cx - 180, 220), (cx + 180, 220)], fill=(*accent, 180), width=3)
 
     # Emoji image
     emoji_img = render_emoji_img(persona.emoji, target_size=118)
@@ -871,7 +871,7 @@ if st.session_state.step == "intro":
 
 # ── STEP 1: ARTISTS ────────────────────────────────────────────────────────────
 elif st.session_state.step == "artists":
-    st.markdown('<div class="hero-title">🎵 SoundPrint</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="question-card">
@@ -912,7 +912,7 @@ elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
 
-    st.markdown('<div class="hero-title">🎵 SoundPrint</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="step-badge">Step 2 of 2 — Question ' + str(q_idx+1) + ' of ' + str(total) + '</div>',
         unsafe_allow_html=True
@@ -945,7 +945,7 @@ elif st.session_state.step == "quiz":
 
 # ── LOADING ────────────────────────────────────────────────────────────────────
 elif st.session_state.step == "loading":
-    st.markdown('<div class="hero-title">🎵 SoundPrint</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
     messages = [
         ("🎧", "Analyzing your artists..."),
         ("✨", "Reading your playlist energy..."),
