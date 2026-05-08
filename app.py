@@ -664,11 +664,10 @@ else:
     fw3 = draw.textlength(footer, font=f_tiny)
     draw.text(((W-fw3)//2, fy+13), footer, fill=DIMMED, font=f_tiny)
 
-    buf = io.BytesIO()
-    img.convert("RGB").save(buf, format="PNG", dpi=(144,144))
-    buf.seek(0)
-    return buf.getvalue()
-
+        buf = io.BytesIO()
+        img.convert("RGB").save(buf, format="PNG", dpi=(144,144))
+        buf.seek(0)
+        return buf.getvalue()
 
 def render_persona_animation(persona_id):
     anim = PERSONA_ANIMATIONS.get(persona_id)
