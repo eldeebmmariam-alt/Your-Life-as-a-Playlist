@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 import time
 import io
-import html
-import os
-import tempfile
 from PIL import Image, ImageDraw, ImageFont
 
 # ============================================================
@@ -80,7 +77,7 @@ PERSONA_DETAILS = {
         "anthem": "Essence — Wizkid ft. Tems",
         "traits": ["Culturally Fluent", "Language-Blind Listener", "World Music Pioneer"],
         "color": "#C47A2B",
-        "artists": ["Wizkid", "Rosalia", "Burna Boy", "Stromae"],
+        "artists": ["Wizkid", "Rosalia", "Burna Boy", "Amr Diab"],
         "dna": {"energy": 70, "extroversion": 72, "emotionality": 75},
         "recs": [
             {"title": "Nonku", "artist": "Msaki", "why": "South African soul so beautiful it bypasses language entirely."},
@@ -148,21 +145,7 @@ PERSONA_DETAILS = {
             {"title": "Retrograde", "artist": "James Blake", "why": "A song that feels like it is reading your journal."},
         ],
     },
-    "the-free-spirit": {
-        "name": "The Free Spirit",
-        "emoji": "🌿",
-        "description": "Genre is a cage and you refuse to be contained. From Afrobeats to folk to ambient electronic — your taste is a passport with stamps from everywhere. You'll try anything once and you almost always love it.",
-        "anthem": "American Pie — Don McLean",
-        "traits": ["Genre Nomad", "Vibe Chameleon", "Perpetually Surprised"],
-        "color": "#1D9E75",
-        "artists": ["Khruangbin", "Bombay Bicycle Club", "Vulfpeck", "Caetano Veloso"],
-        "dna": {"energy": 65, "extroversion": 70, "emotionality": 65},
-        "recs": [
-            {"title": "Maria Also", "artist": "Khruangbin", "why": "A track that floats between genres and never lands — perfectly."},
-            {"title": "Lazy Eye", "artist": "Silversun Pickups", "why": "Shoegaze, pop, and something completely unclassifiable all at once."},
-            {"title": "Alone Again Or", "artist": "Love", "why": "A 1967 song that sounds like nothing before or after it."},
-        ],
-    },
+
     "the-nostalgist": {
         "name": "The Nostalgist",
         "emoji": "📼",
@@ -255,7 +238,7 @@ GENRE_TO_PERSONA = {
     "Pop-Punk": "the-nostalgist",
     "Emo": "the-nostalgist",
     "Britpop": "the-nostalgist",
-    "Folk/Pop": "the-free-spirit",
+    "Folk/Pop": "the-daydreamer",
     "Hyperpop": "the-trendsetter",
     "Experimental": "the-trendsetter",
     "Electronic": "the-trendsetter",
@@ -267,7 +250,7 @@ QUIZ_QUESTIONS = [
         "question": "Be honest — what does your Spotify Wrapped say about you?",
         "options": [
             ("🎊 Top 0.1% of some artist who headlines festivals. I have no regrets.", "the-life-of-the-party", "the-hype-beast"),
-            ("🌍 Five different languages, three continents. My friends were confused.", "the-global-ear", "the-free-spirit"),
+            ("🌍 Five different languages, three continents. My friends were confused.", "the-global-ear", "the-daydreamer"),
             ("🎧 Same 30 songs on repeat. I found what works and I stay loyal.", "the-nostalgist", "the-chill-soul"),
             ("🔭 A bunch of artists you've never heard of. That's kind of the point.", "the-trendsetter", "the-overthinker"),
         ]
@@ -294,7 +277,7 @@ QUIZ_QUESTIONS = [
         "question": "Someone says they only listen to music in English. You:",
         "options": [
             ("🤦 Immediately play them something that changes their mind.", "the-global-ear", "the-trendsetter"),
-            ("🙂 Respect it — everyone has their comfort zone.", "the-chill-soul", "the-free-spirit"),
+            ("🙂 Respect it — everyone has their comfort zone.", "the-chill-soul", "the-daydreamer"),
             ("🎸 Same energy as someone who only eats one cuisine. Limiting.", "the-rebel", "the-overthinker"),
             ("🤷 Honestly I get it. I'm also very loyal to what I already know.", "the-nostalgist", "the-old-soul"),
         ]
@@ -313,7 +296,7 @@ QUIZ_QUESTIONS = [
         "options": [
             ("🎬 A cinematic rise — from the intro to the moment everything clicks.", "the-main-character", "the-hype-beast"),
             ("📼 A specific era of my life I keep returning to. You had to be there.", "the-nostalgist", "the-old-soul"),
-            ("🌐 No theme, no genre, no rules. Every track is from a different world.", "the-global-ear", "the-free-spirit"),
+            ("🌐 No theme, no genre, no rules. Every track is from a different world.", "the-global-ear", "the-daydreamer"),
             ("🎼 A carefully mapped emotional arc. The order is non-negotiable.", "the-overthinker", "the-romantic"),
         ]
     },
@@ -322,16 +305,16 @@ QUIZ_QUESTIONS = [
         "options": [
             ("📱 The algorithm delivers and I stay plugged in. It knows me well.", "the-trendsetter", "the-hype-beast"),
             ("🌙 Spotify rabbit holes at 2am — one artist leads to another for hours.", "the-overthinker", "the-daydreamer"),
-            ("🌍 Friends from other countries, YouTube deep dives, discoveries abroad.", "the-global-ear", "the-free-spirit"),
+            ("🌍 Friends from other countries, YouTube deep dives, discoveries abroad.", "the-global-ear", "the-daydreamer"),
             ("📻 Old record stores and recommendations from people with 400 YouTube subscribers.", "the-old-soul", "the-nostalgist"),
         ]
     },
     {
         "question": "A friend asks you to describe your music taste in one sentence:",
         "options": [
-            ("🔥 If it slaps and you haven't heard it, that's my lane.", "the-hype-beast", "the-trendsetter"),
+            ("🔥 Whatever's mainstream right now? You definitely know my top played from 6 months ago.", "the-trendsetter", "the-hype-beast"),
             ("☕ Warm, real, and nothing that requires explaining.", "the-chill-soul", "the-romantic"),
-            ("🌍 Honestly it's easier to tell you what I don't listen to.", "the-global-ear", "the-free-spirit"),
+            ("🌍 Honestly it's easier to tell you what I don't listen to.", "the-global-ear", "the-daydreamer"),
             ("🌀 I'd need a whiteboard and 20 minutes to answer that properly.", "the-overthinker", "the-daydreamer"),
         ]
     },
@@ -348,7 +331,7 @@ QUIZ_QUESTIONS = [
         "question": "Pick the concert experience that's actually you:",
         "options": [
             ("🏟️ Front row, every lyric memorized, completely unhinged in the best way.", "the-life-of-the-party", "the-hype-beast"),
-            ("🌍 A festival with artists from six countries — half the crowd speaks a different language.", "the-global-ear", "the-free-spirit"),
+            ("🌍 A festival with artists from six countries — half the crowd speaks a different language.", "the-global-ear", "the-daydreamer"),
             ("🎭 Intimate venue, fifty people, artist plays something never performed before.", "the-romantic", "the-overthinker"),
             ("🎧 Honestly? Studio album with headphones. Live versions always disappoint.", "the-nostalgist", "the-old-soul"),
         ]
@@ -359,7 +342,7 @@ QUIZ_QUESTIONS = [
             ("📻 Pre-1950s. Jazz clubs, big bands, a time when musicians were treated like royalty.", "the-old-soul", "the-romantic"),
             ("🕰️ The 60s–70s. Woodstock, Motown, the birth of everything. I would have been right there.", "the-old-soul", "the-nostalgist"),
             ("🌃 The 80s–90s. When genres were exploding and nothing felt polished yet.", "the-nostalgist", "the-rebel"),
-            ("🚀 Right now. No other era has had access to this much music from everywhere at once.", "the-global-ear", "the-free-spirit"),
+            ("🚀 Right now. No other era has had access to this much music from everywhere at once.", "the-global-ear", "the-daydreamer"),
         ]
     },
 ]
@@ -390,7 +373,6 @@ PERSONA_ANIMATIONS = {
     "the-old-soul":          {"items": ["🎷","📻","🎶","✨","🎷","📻","🎶","✨","🎷"], "anim": "oldSoulSway", "dir": "fixed"},
     "the-hype-beast":        {"items": ["🔥","⚡","💥","🔥","⚡","💥","🔥","⚡","💥"], "anim": "hypeFall", "dir": "top"},
     "the-overthinker":       {"items": ["🌀","🌙","💭","✨","🌀","🌙","💭","✨","🌀"], "anim": "thinkSpin", "dir": "fixed"},
-    "the-free-spirit":       {"items": ["🌿","🌈","✨","🌍","🌿","🦋","✨","🌿","🌈"], "anim": "spiritFloat", "dir": "bottom"},
     "the-nostalgist":        {"items": ["📼","💿","🕰️","✨","📼","💿","🕰️","✨","📼"], "anim": "nostalgiaFade", "dir": "fixed"},
     "the-rebel":             {"items": ["⚡","🔥","🎸","⚡","🔥","🎸","⚡","🔥","🎸"], "anim": "rebelCrash", "dir": "top"},
     "the-trendsetter":       {"items": ["✨","🚀","💿","⚡","✨","🪩","🚀","✨","💿"], "anim": "trendRise", "dir": "bottom"},
@@ -472,7 +454,7 @@ def genre_to_persona_id(genre):
     for key, pid in GENRE_TO_PERSONA.items():
         if key.lower() in genre.lower():
             return pid
-    return "the-free-spirit"
+    return "the-daydreamer"
 
 def merge_and_decide(artist_scores, quiz_scores):
     """Function 5: Combine artist scores (40%) and quiz scores (60%)."""
@@ -485,11 +467,11 @@ def merge_and_decide(artist_scores, quiz_scores):
     if final:
         return max(final, key=final.get)
     else:
-        return "the-free-spirit"
+        return "the-daydreamer"
 
 def format_result(persona_id):
     """Function 6: Return a formatted result string."""
-    p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
+    p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-daydreamer"])
     return f"{p['emoji']} {p['name']}: {p['description']}"
 
 # ============================================================
@@ -498,7 +480,7 @@ def format_result(persona_id):
 class MusicPersona:
     """Represents a user's music personality result."""
     def __init__(self, persona_id, artist_names_found):
-        p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-free-spirit"])
+        p = PERSONA_DETAILS.get(persona_id, PERSONA_DETAILS["the-daydreamer"])
         self.persona_id     = persona_id
         self.name           = p["name"]
         self.emoji          = p["emoji"]
@@ -537,11 +519,10 @@ class MusicPersona:
 # ── Helper functions ───────────────────────────────────────────────────────────
 def render_emoji_img(emoji_char, target_size=88):
     """Render a single emoji to an RGBA PIL Image using NotoColorEmoji."""
-    font_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
     import os
+    font_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
     if not os.path.exists(font_path):
         return None
-    # Try every available approach
     attempts = []
     try:
         attempts.append({"size": 109, "layout_engine": ImageFont.Layout.RAQM})
@@ -559,15 +540,30 @@ def render_emoji_img(emoji_char, target_size=88):
             bbox = tmp.getbbox()
             if bbox and (bbox[2] - bbox[0]) > 4 and (bbox[3] - bbox[1]) > 4:
                 cropped = tmp.crop(bbox)
-                # Verify it has actual color content (not just grey/transparent)
-                pixels = list(cropped.getdata())
-                colored = sum(1 for p in pixels if len(p) == 4 and p[3] > 50
-                              and not (abs(p[0]-p[1]) < 10 and abs(p[1]-p[2]) < 10))
-                if colored > 10:
-                    return cropped.resize((target_size, target_size), Image.LANCZOS)
+                return cropped.resize((target_size, target_size), Image.LANCZOS)
         except Exception:
             continue
     return None
+
+
+def clean_text(text):
+    """Replace unicode characters that may not render in PIL fonts."""
+    replacements = {
+        "—": "-",   # em dash
+        "–": "-",   # en dash
+        "‘": "'",   # left single quote
+        "’": "'",   # right single quote / apostrophe
+        "“": '"',   # left double quote
+        "”": '"',   # right double quote
+        "…": "...", # ellipsis
+        "é": "e",   # é
+        "è": "e",   # è
+        "à": "a",   # à
+        "ü": "u",   # ü
+    }
+    for char, replacement in replacements.items():
+        text = text.replace(char, replacement)
+    return text
 
 
 def generate_persona_card(persona):
@@ -646,6 +642,12 @@ def generate_persona_card(persona):
     MUTED    = (190, 190, 210, 255)
     DIMMED   = (120, 120, 145, 255)
 
+    # Clean all text to avoid font encoding issues
+    card_name   = clean_text(persona.name)
+    card_desc   = clean_text(persona.description)
+    card_anthem = clean_text(persona.anthem)
+    card_traits = [clean_text(t) for t in persona.traits]
+
     # ── App label ─────────────────────────────────────────────
     lbl = "YOUR LIFE AS A PLAYLIST"
     lw  = draw.textlength(lbl, font=f_label)
@@ -662,19 +664,21 @@ def generate_persona_card(persona):
         img.paste(emoji_img, (ex, emoji_y), emoji_img)
         name_y = emoji_y + emoji_img.height + 18
     else:
+        # Fallback: draw emoji as text using DejaVu
+        draw.text((cx - 20, emoji_y + 10), persona.emoji, fill=(*accent, 200), font=f_name_s)
         name_y = emoji_y + 96
 
     # ── Persona name ──────────────────────────────────────────
     name_font = f_name
-    nw = draw.textlength(persona.name, font=name_font)
+    nw = draw.textlength(card_name, font=name_font)
     if nw > W - 160:
         name_font = f_name_s
-        nw = draw.textlength(persona.name, font=name_font)
-    draw.text(((W-nw)//2, name_y), persona.name, fill=(*accent, 255), font=name_font)
+        nw = draw.textlength(card_name, font=name_font)
+    draw.text(((W-nw)//2, name_y), card_name, fill=(*accent, 255), font=name_font)
 
     # ── Description ───────────────────────────────────────────
     desc_y  = name_y + 74
-    lines   = wrap_text(draw, persona.description, f_body, W - 200)
+    lines   = wrap_text(draw, card_desc, f_body, W - 200)
     for line in lines[:5]:
         lw2 = draw.textlength(line, font=f_body)
         draw.text(((W-lw2)//2, desc_y), line, fill=MUTED, font=f_body)
@@ -688,13 +692,13 @@ def generate_persona_card(persona):
         fill=blend(accent, (0,0,0), 0.20) + (255,),
         outline=(*accent, 65), width=1
     )
-    anthem_str = "Your anthem:  " + persona.anthem
+    anthem_str = "Your anthem:  " + card_anthem
     aw = draw.textlength(anthem_str, font=f_small)
     draw.text(((W-aw)//2, ay+20), anthem_str, fill=(*accent, 230), font=f_small)
 
     # ── Traits ────────────────────────────────────────────────
     traits_y   = ay + 94
-    traits_str = "  ·  ".join(persona.traits)
+    traits_str = "  -  ".join(card_traits)
     tw = draw.textlength(traits_str, font=f_traits)
     draw.text(((W-tw)//2, traits_y), traits_str, fill=MUTED, font=f_traits)
 
@@ -746,113 +750,6 @@ def generate_persona_card(persona):
     out.save(buf, format="PNG", dpi=(144, 144))
     buf.seek(0)
     return buf.getvalue()
-
-def generate_persona_html_card(persona):
-    """Generate a standalone downloadable HTML result card."""
-    traits_html = "".join([
-        '<span class="trait-pill">' + html.escape(t) + '</span>' for t in persona.traits
-    ])
-    artists_html = "".join([
-        '<span class="artist-chip">♪ ' + html.escape(a) + '</span>' for a in persona.artists
-    ])
-
-    recs_html = ""
-    for rec in persona.recs:
-        recs_html += (
-            '<div class="rec">'
-            '<div class="rec-title">' + html.escape(rec["title"]) + '</div>'
-            '<div class="rec-artist">' + html.escape(rec["artist"]) + '</div>'
-            '<div class="rec-why">' + html.escape(rec["why"]) + '</div>'
-            '</div>'
-        )
-
-    artist_note = ""
-    if persona.artist_sources:
-        artist_note = (
-            '<p class="artist-note">Based on: '
-            + html.escape(", ".join(persona.artist_sources))
-            + ' — combined with your quiz answers.</p>'
-        )
-
-    html_doc = (
-        '<!doctype html>'
-        '<html>'
-        '<head>'
-        '<meta charset="utf-8" />'
-        '<meta name="viewport" content="width=device-width,initial-scale=1" />'
-        '<title>' + html.escape(persona.name) + ' - Music Persona</title>'
-        '<style>'
-        'body{font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);color:#fff;padding:24px;margin:0;}'
-        '.container{max-width:900px;margin:0 auto;}'
-        '.result-card{border-radius:24px;padding:2.2rem 2rem;text-align:center;margin:1rem 0;'
-        'background:linear-gradient(135deg,' + persona.color + '22,' + persona.color + '44);'
-        'border:2px solid ' + persona.color + '55;}'
-        '.result-emoji{font-size:4.5rem;display:block;margin-bottom:0.5rem;}'
-        '.result-name{font-family:"Playfair Display",Georgia,serif;font-size:2.4rem;font-weight:700;margin-bottom:1rem;color:' + persona.color + ';}'
-        '.result-desc{font-size:1.05rem;line-height:1.75;margin-bottom:1.2rem;opacity:0.92;}'
-        '.anthem-box{background:rgba(0,0,0,0.18);border-radius:12px;padding:0.9rem 1.4rem;margin-bottom:1.1rem;font-size:0.95rem;color:' + persona.color + ';}'
-        '.trait-pill{display:inline-block;background:rgba(0,0,0,0.15);border-radius:50px;padding:5px 16px;margin:4px;font-size:0.82rem;font-weight:500;}'
-        '.artist-note{opacity:0.65;font-size:0.82rem;margin-top:1.2rem;}'
-        '.section-title{font-family:"Playfair Display",Georgia,serif;font-size:1.2rem;color:white;margin:1.5rem 0 0.75rem 0;}'
-        '.artist-chip{display:inline-block;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:50px;padding:6px 16px;margin:4px;font-size:0.85rem;color:#e0e0e0;}'
-        '.recs-wrap{text-align:left;margin-top:0.5rem;}'
-        '.rec{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + persona.color + ';border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.6rem;}'
-        '.rec-title{font-weight:600;color:white;font-size:0.95rem;}'
-        '.rec-artist{color:' + persona.color + ';font-size:0.85rem;margin:2px 0 6px 0;}'
-        '.rec-why{color:rgba(255,255,255,0.55);font-size:0.82rem;font-style:italic;}'
-        '</style>'
-        '</head>'
-        '<body>'
-        '<div class="container">'
-        '<div class="result-card">'
-        '<span class="result-emoji">' + html.escape(persona.emoji) + '</span>'
-        '<div class="result-name">' + html.escape(persona.name) + '</div>'
-        '<div class="result-desc">' + html.escape(persona.description) + '</div>'
-        '<div class="anthem-box">🎶 Your anthem: <strong>' + html.escape(persona.anthem) + '</strong></div>'
-        '<div>' + traits_html + '</div>'
-        + artist_note +
-        '</div>'
-        '<div class="section-title">🎤 Artists you would vibe with</div>'
-        '<div>' + artists_html + '</div>'
-        '<div class="section-title">🎧 Songs you might not know yet</div>'
-        '<div class="recs-wrap">' + recs_html + '</div>'
-        '</div>'
-        '</body>'
-        '</html>'
-    )
-
-    return html_doc
-
-def generate_persona_card_png_from_html(persona):
-    """Render the styled HTML card to PNG bytes. Returns None if rendering fails."""
-    try:
-        from html2image import Html2Image
-
-        html_doc = generate_persona_html_card(persona)
-
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            html_path = os.path.join(tmp_dir, "persona_card.html")
-            png_name = "persona_card.png"
-            png_path = os.path.join(tmp_dir, png_name)
-
-            with open(html_path, "w", encoding="utf-8") as f:
-                f.write(html_doc)
-
-            hti = Html2Image(output_path=tmp_dir)
-            hti.screenshot(
-                html_file=html_path,
-                save_as=png_name,
-                size=(1000, 1400),
-            )
-
-            if os.path.exists(png_path):
-                with open(png_path, "rb") as f:
-                    return f.read()
-
-    except Exception:
-        return None
-
-    return None
 
 def render_persona_animation(persona_id):
     anim = PERSONA_ANIMATIONS.get(persona_id)
@@ -1168,10 +1065,7 @@ elif st.session_state.step == "result":
 
     # ── 0. Download card (at top, collapsed by default) ──────────────────────
     with st.expander("📸 Download your result card"):
-        card_bytes = generate_persona_card_png_from_html(persona)
-        if card_bytes is None:
-            card_bytes = generate_persona_card(persona)
-            st.caption("Using fallback PNG card style (HTML-to-PNG renderer not available on this machine).")
+        card_bytes = generate_persona_card(persona)
         card_img = Image.open(io.BytesIO(card_bytes))
         st.image(card_img, use_container_width=True)
         st.download_button(
