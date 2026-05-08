@@ -889,7 +889,7 @@ if st.session_state.step == "intro":
 
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown('<div class="intro-stat"><div class="intro-stat-num">13</div><div class="intro-stat-label">possible personas</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="intro-stat"><div class="intro-stat-num">12</div><div class="intro-stat-label">possible personas</div></div>', unsafe_allow_html=True)
     with c2:
         st.markdown('<div class="intro-stat"><div class="intro-stat-num">10</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
     with c3:
