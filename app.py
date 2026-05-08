@@ -806,9 +806,9 @@ elif st.session_state.step == "artists":
     </div>
     """, unsafe_allow_html=True)
 
-    artist1 = st.text_input("Artist #1", placeholder="e.g. Amr Diab")
+    artist1 = st.text_input("Artist #1", placeholder="e.g. Tame Impala")
     artist2 = st.text_input("Artist #2 (optional)", placeholder="e.g. Kendrick Lamar")
-    artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Lorde")
+    artist3 = st.text_input("Artist #3 (optional)", placeholder="e.g. Rosalia")
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Next — Take the quiz →", use_container_width=True):
