@@ -578,14 +578,14 @@ def generate_persona_card(persona):
     poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
     lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
-    f_brand = try_font(lora, 70)
+    f_brand = try_font(poppins_reg, 76)
     f_tagline = try_font(poppins_reg, 22)
     f_name = try_font(lora, 62)
     f_name_s = try_font(lora, 48)
-    f_body = try_font(poppins_reg, 32)
-    f_traits = try_font(poppins_med, 26)
-    f_small = try_font(poppins_reg, 24)
-    f_tiny = try_font(poppins_reg, 21)
+    f_body = try_font(poppins_reg, 48)
+    f_traits = try_font(poppins_med, 28)
+    f_small = try_font(poppins_reg, 38)
+    f_tiny = try_font(poppins_reg, 22)
 
     cx = W // 2
     WHITE = (255, 255, 255, 255)
@@ -602,16 +602,16 @@ def generate_persona_card(persona):
     tagline = "YOUR MUSIC TASTE HAS A SIGNATURE"
 
     brand_w = draw.textlength(brand, font=f_brand)
-    draw.text(((W - brand_w) // 2, 84), brand, fill=WHITE, font=f_brand)
+    draw.text(((W - brand_w) // 2, 70), brand, fill=WHITE, font=f_brand)
 
     tagline_w = draw.textlength(tagline, font=f_tagline)
-    draw.text(((W - tagline_w) // 2, 165), tagline, fill=(*accent, 230), font=f_tagline)
+    draw.text(((W - tagline_w) // 2, 155), tagline, fill=(*accent, 230), font=f_tagline)
 
-    draw.line([(cx - 150, 210), (cx + 150, 210)], fill=(*accent, 150), width=3)
+    draw.line([(cx - 170, 205), (cx + 170, 205)], fill=(*accent, 170), width=3)
 
     # Emoji image
     emoji_img = render_emoji_img(persona.emoji, target_size=118)
-    emoji_y = 248
+    emoji_y = 260
     if emoji_img:
         ex = (W - emoji_img.width) // 2
         img.paste(emoji_img, (ex, emoji_y), emoji_img)
