@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import time
 import io
@@ -1052,11 +1053,11 @@ elif st.session_state.step == "result":
             unsafe_allow_html=True
         )
         embed_url = "https://open.spotify.com/embed/playlist/" + playlist_id + "?utm_source=generator&theme=0"
-        st.markdown(
+        components.html(
             '<iframe src="' + embed_url + '" width="100%" height="380" frameborder="0" '
             'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" '
-            'loading="lazy" style="border-radius:16px;margin-bottom:0.5rem;"></iframe>',
-            unsafe_allow_html=True
+            'loading="lazy" style="border-radius:16px;"></iframe>',
+            height=390
         )
     else:
         st.markdown('<div class="section-title">🎧 Songs you might not know yet</div>', unsafe_allow_html=True)
