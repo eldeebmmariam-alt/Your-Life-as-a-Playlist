@@ -312,6 +312,13 @@ GENRE_PROFILES = {
     "Latin": {"energy": 3, "extroversion": 3, "emotionality": 2},
 }
 
+PERSONA_PLAYLISTS = {
+    "the-life-of-the-party": "64HIyD3aedr4hFLSZOiSYg",
+    "the-hype-beast":        "0W1GKIyAeJHMsICQrDyEeP",
+    "the-main-character":    "6yCk5eMgY42kal93Yz3aiS",
+    "the-romantic":          "16tVUcwBqtZTBCLzaU57Xz",
+}
+
 PERSONA_ANIMATIONS = {
     "the-life-of-the-party": {"items": ["🎉","✨","🎊","✨","🎉","🥳","🎊","✨","🎉"], "anim": "partyFall", "dir": "top"},
     "the-main-character":    {"items": ["⭐","✨","🌟","✨","⭐","🌟","✨","⭐","🌟"], "anim": "mainTwinkle", "dir": "fixed"},
@@ -1032,18 +1039,39 @@ elif st.session_state.step == "result":
     artists_html = "".join(['<span class="artist-chip">♪ ' + a + '</span>' for a in persona.artists])
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
 
-    # 4. Song recommendations
-    st.markdown('<div class="section-title">🎧 Songs you might not know yet</div>', unsafe_allow_html=True)
-    st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">Three picks curated specifically for your persona.</p>', unsafe_allow_html=True)
-    for rec in persona.recs:
+    # 4. Spotify playlist or song recommendations fallback
+    playlist_id = PERSONA_PLAYLISTS.get(persona.persona_id)
+    if playlist_id:
+        st.markdown('<div class="section-title">🎧 Your persona playlist</div>', unsafe_allow_html=True)
         st.markdown(
-            '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + persona.color + ';border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.6rem;">'
-            '<div style="font-weight:600;color:white;font-size:0.95rem;">' + rec["title"] + '</div>'
-            '<div style="color:' + persona.color + ';font-size:0.85rem;margin:2px 0 6px 0;">' + rec["artist"] + '</div>'
-            '<div style="color:rgba(255,255,255,0.5);font-size:0.82rem;font-style:italic;">' + rec["why"] + '</div>'
-            '</div>',
+            '<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">'
+            'A curated Spotify playlist built for your music identity.</p>',
             unsafe_allow_html=True
         )
+        embed_url = "https://open.spotify.com/embed/playlist/" + playlist_id + "?utm_source=generator&theme=0"
+        st.markdown(
+            '<iframe src="' + embed_url + '" width="100%" height="380" frameborder="0" '
+            'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" '
+            'loading="lazy" style="border-radius:16px;margin-bottom:0.5rem;"></iframe>',
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown('<div class="section-title">🎧 Songs you might not know yet</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">'
+            'Three picks curated specifically for your persona.</p>',
+            unsafe_allow_html=True
+        )
+        for rec in persona.recs:
+            st.markdown(
+                '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);'
+                'border-left:3px solid ' + persona.color + ';border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.6rem;">'
+                '<div style="font-weight:600;color:white;font-size:0.95rem;">' + rec["title"] + '</div>'
+                '<div style="color:' + persona.color + ';font-size:0.85rem;margin:2px 0 6px 0;">' + rec["artist"] + '</div>'
+                '<div style="color:rgba(255,255,255,0.5);font-size:0.82rem;font-style:italic;">' + rec["why"] + '</div>'
+                '</div>',
+                unsafe_allow_html=True
+            )
 
     # 5. Take it again
     st.markdown("<br>", unsafe_allow_html=True)
