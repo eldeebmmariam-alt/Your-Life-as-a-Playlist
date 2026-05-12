@@ -996,14 +996,17 @@ elif st.session_state.step == "result":
 
     st.markdown('<div class="hero-title">🎵 Your Result 🎵</div>', unsafe_allow_html=True)
 
-    # 0. Download card expander at top
+    # 0. Download card expander at top — card cached in session state to avoid re-render lag
+    if "card_bytes" not in st.session_state or st.session_state.get("card_persona") != persona.persona_id:
+        st.session_state.card_bytes = generate_persona_card(persona)
+        st.session_state.card_persona = persona.persona_id
+
     with st.expander("📸 Download your result card"):
-        card_bytes = generate_persona_card(persona)
-        card_img = Image.open(io.BytesIO(card_bytes))
+        card_img = Image.open(io.BytesIO(st.session_state.card_bytes))
         st.image(card_img, use_container_width=True)
         st.download_button(
             label="⬇️ Download PNG",
-            data=card_bytes,
+            data=st.session_state.card_bytes,
             file_name="my-music-persona-" + persona.persona_id + ".png",
             mime="image/png",
             use_container_width=True,
