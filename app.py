@@ -315,9 +315,17 @@ GENRE_PROFILES = {
 
 PERSONA_PLAYLISTS = {
     "the-life-of-the-party": "64HIyD3aedr4hFLSZOiSYg",
-    "the-hype-beast":        "0W1GKIyAeJHMsICQrDyEeP",
     "the-main-character":    "6yCk5eMgY42kal93Yz3aiS",
+    "the-daydreamer":        "5KusVLMa0jquoXK4Jegl9a",
+    "the-chill-soul":        "02h8w25GyxgoNyRqoaQSss",
+    "the-global-ear":        "2qHdgEnG6t4GE1kLw5K1RH",
     "the-romantic":          "16tVUcwBqtZTBCLzaU57Xz",
+    "the-old-soul":          "7veZUje26zVTHEDoW6NTKf",
+    "the-hype-beast":        "0W1GKIyAeJHMsICQrDyEeP",
+    "the-overthinker":       "4V2ZVu5vKTY5aCfXWmQEVH",
+    "the-nostalgist":        "1nzR1ANs7KTLQOuIAqHRKV",
+    "the-rebel":             "1WySMR6VSCL9erM1pYvFcw",
+    "the-trendsetter":       "47fDNKQHXqMPbckpK5yol4",
 }
 
 PERSONA_ANIMATIONS = {
