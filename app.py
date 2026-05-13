@@ -1,9 +1,9 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 import time
 import io
 import urllib.request
+import streamlit.components.v1 as components
 from PIL import Image, ImageDraw, ImageFont
 
 # ============================================================
@@ -13,6 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 PERSONA_DETAILS = {
     "the-life-of-the-party": {
         "name": "The Life of the Party", "emoji": "🎉", "color": "#D85A30",
+        "playlist_url": "https://open.spotify.com/playlist/64HIyD3aedr4hFLSZOiSYg",
         "description": "You don't just attend the function — you ARE the function. Your energy is infectious, your playlist converts skeptics, and somehow you know every word to songs you've never even heard. You live for the moments that become memories.",
         "anthem": "As It Was — Harry Styles",
         "traits": ["Crowd Magnetizer", "Vibes Architect", "Last One Standing"],
@@ -26,6 +27,7 @@ PERSONA_DETAILS = {
     },
     "the-main-character": {
         "name": "The Main Character", "emoji": "🎬", "color": "#C0392B",
+        "playlist_url": "https://open.spotify.com/playlist/6yCk5eMgY42kal93Yz3aiS",
         "description": "Your playlist feels like a movie soundtrack and you are definitely the lead role. Every walk somewhere is a music video, every mundane moment deserves a cinematic score. Life is the stage and you've always known your cue.",
         "anthem": "Starboy — The Weeknd",
         "traits": ["Cinematic Thinker", "Moment Maximizer", "Effortlessly Iconic"],
@@ -78,6 +80,7 @@ PERSONA_DETAILS = {
     },
     "the-romantic": {
         "name": "The Romantic", "emoji": "🌹", "color": "#D4537E",
+        "playlist_url": "https://open.spotify.com/playlist/16tVUcwBqtZTBCLzaU57Xz",
         "description": "You fall in love with songs the way others fall in love with people — completely and suddenly. Every playlist you've ever made is secretly a love letter. You believe deeply in the right song at the right moment.",
         "anthem": "Make You Feel My Love — Adele",
         "traits": ["Emotional Archivist", "Slow Dance Defender", "Lyric Memorizer"],
@@ -104,6 +107,7 @@ PERSONA_DETAILS = {
     },
     "the-hype-beast": {
         "name": "The Hype Beast", "emoji": "🔥", "color": "#E24B4A",
+        "playlist_url": "https://open.spotify.com/playlist/0W1GKIyAeJHMsICQrDyEeP",
         "description": "If it slaps, you found it first. Your speaker is always at full blast and your energy could power a small city. You live for the drop, the unexpected feature, and the freestyle that breaks the internet.",
         "anthem": "HUMBLE. — Kendrick Lamar",
         "traits": ["First-to-Know", "Volume Maximalist", "Culture Mover"],
@@ -313,13 +317,6 @@ GENRE_PROFILES = {
     "Latin": {"energy": 3, "extroversion": 3, "emotionality": 2},
 }
 
-PERSONA_PLAYLISTS = {
-    "the-life-of-the-party": "64HIyD3aedr4hFLSZOiSYg",
-    "the-hype-beast":        "0W1GKIyAeJHMsICQrDyEeP",
-    "the-main-character":    "6yCk5eMgY42kal93Yz3aiS",
-    "the-romantic":          "16tVUcwBqtZTBCLzaU57Xz",
-}
-
 PERSONA_ANIMATIONS = {
     "the-life-of-the-party": {"items": ["🎉","✨","🎊","✨","🎉","🥳","🎊","✨","🎉"], "anim": "partyFall", "dir": "top"},
     "the-main-character":    {"items": ["⭐","✨","🌟","✨","⭐","🌟","✨","⭐","🌟"], "anim": "mainTwinkle", "dir": "fixed"},
@@ -452,6 +449,7 @@ class MusicPersona:
         self.artists        = p["artists"]
         self.dna            = p["dna"]
         self.recs           = p.get("recs", [])
+        self.playlist_url   = p.get("playlist_url", "")
         self.artist_sources = artist_names_found
 
     def get_traits_string(self):
@@ -997,17 +995,14 @@ elif st.session_state.step == "result":
 
     st.markdown('<div class="hero-title">🎵 Your Result 🎵</div>', unsafe_allow_html=True)
 
-    # 0. Download card expander at top — card cached in session state to avoid re-render lag
-    if "card_bytes" not in st.session_state or st.session_state.get("card_persona") != persona.persona_id:
-        st.session_state.card_bytes = generate_persona_card(persona)
-        st.session_state.card_persona = persona.persona_id
-
+    # 0. Download card expander at top
     with st.expander("📸 Download your result card"):
-        card_img = Image.open(io.BytesIO(st.session_state.card_bytes))
+        card_bytes = generate_persona_card(persona)
+        card_img = Image.open(io.BytesIO(card_bytes))
         st.image(card_img, use_container_width=True)
         st.download_button(
             label="⬇️ Download PNG",
-            data=st.session_state.card_bytes,
+            data=card_bytes,
             file_name="my-music-persona-" + persona.persona_id + ".png",
             mime="image/png",
             use_container_width=True,
@@ -1027,6 +1022,40 @@ elif st.session_state.step == "result":
         unsafe_allow_html=True
     )
 
+    # 1.5 Spotify playlist recommendation
+    if persona.playlist_url:
+        st.markdown('<div class="section-title">🎶 Your SoundPrint Playlist</div>', unsafe_allow_html=True)
+
+        st.markdown(
+            '<div style="background:rgba(255,255,255,0.04);'
+            'border:1px solid rgba(255,255,255,0.1);'
+            'border-left:3px solid ' + persona.color + ';'
+            'border-radius:16px;'
+            'padding:1.25rem;'
+            'margin-bottom:1.25rem;">'
+            '<div style="font-weight:700;color:white;font-size:1rem;margin-bottom:0.35rem;">'
+            'A playlist tailored to your result'
+            '</div>'
+            '<div style="color:rgba(255,255,255,0.6);font-size:0.9rem;margin-bottom:1rem;">'
+            'Based on your artists, quiz answers, and overall music persona.'
+            '</div>'
+            '<a href="' + persona.playlist_url + '" target="_blank" '
+            'style="display:inline-block;background:' + persona.color + ';'
+            'color:white;text-decoration:none;font-weight:700;'
+            'padding:0.75rem 1.1rem;border-radius:999px;">'
+            'Open playlist on Spotify →'
+            '</a>'
+            '</div>',
+            unsafe_allow_html=True
+        )
+
+        try:
+            playlist_id = persona.playlist_url.split("/playlist/")[1].split("?")[0]
+            embed_url = "https://open.spotify.com/embed/playlist/" + playlist_id
+            components.iframe(embed_url, height=380, scrolling=False)
+        except Exception:
+            pass
+
     # 2. Music DNA
     st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
     st.markdown(
@@ -1043,39 +1072,18 @@ elif st.session_state.step == "result":
     artists_html = "".join(['<span class="artist-chip">♪ ' + a + '</span>' for a in persona.artists])
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
 
-    # 4. Spotify playlist or song recommendations fallback
-    playlist_id = PERSONA_PLAYLISTS.get(persona.persona_id)
-    if playlist_id:
-        st.markdown('<div class="section-title">🎧 Your persona playlist</div>', unsafe_allow_html=True)
+    # 4. Song recommendations
+    st.markdown('<div class="section-title">🎧 Songs you might not know yet</div>', unsafe_allow_html=True)
+    st.markdown('<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">Three picks curated specifically for your persona.</p>', unsafe_allow_html=True)
+    for rec in persona.recs:
         st.markdown(
-            '<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">'
-            'A curated Spotify playlist built for your music identity.</p>',
+            '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid ' + persona.color + ';border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.6rem;">'
+            '<div style="font-weight:600;color:white;font-size:0.95rem;">' + rec["title"] + '</div>'
+            '<div style="color:' + persona.color + ';font-size:0.85rem;margin:2px 0 6px 0;">' + rec["artist"] + '</div>'
+            '<div style="color:rgba(255,255,255,0.5);font-size:0.82rem;font-style:italic;">' + rec["why"] + '</div>'
+            '</div>',
             unsafe_allow_html=True
         )
-        embed_url = "https://open.spotify.com/embed/playlist/" + playlist_id + "?utm_source=generator&theme=0"
-        components.html(
-            '<iframe src="' + embed_url + '" width="100%" height="380" frameborder="0" '
-            'allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" '
-            'loading="lazy" style="border-radius:16px;"></iframe>',
-            height=390
-        )
-    else:
-        st.markdown('<div class="section-title">🎧 Songs you might not know yet</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">'
-            'Three picks curated specifically for your persona.</p>',
-            unsafe_allow_html=True
-        )
-        for rec in persona.recs:
-            st.markdown(
-                '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);'
-                'border-left:3px solid ' + persona.color + ';border-radius:12px;padding:1rem 1.25rem;margin-bottom:0.6rem;">'
-                '<div style="font-weight:600;color:white;font-size:0.95rem;">' + rec["title"] + '</div>'
-                '<div style="color:' + persona.color + ';font-size:0.85rem;margin:2px 0 6px 0;">' + rec["artist"] + '</div>'
-                '<div style="color:rgba(255,255,255,0.5);font-size:0.82rem;font-style:italic;">' + rec["why"] + '</div>'
-                '</div>',
-                unsafe_allow_html=True
-            )
 
     # 5. Take it again
     st.markdown("<br>", unsafe_allow_html=True)
