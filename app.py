@@ -917,7 +917,28 @@ if st.session_state.step == "intro":
     </div>
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Let's find my sound →", use_container_width=True):
+    st.markdown("""
+    <style>
+    div[data-testid="stButton"] > button:first-child {
+        background: linear-gradient(135deg, #a78bfa, #f472b6) !important;
+        border: none !important;
+        border-radius: 50px !important;
+        color: white !important;
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.05em !important;
+        padding: 1rem 2rem !important;
+        box-shadow: 0 0 30px rgba(167,139,250,0.4) !important;
+        transition: all 0.3s ease !important;
+        text-align: center !important;
+    }
+    div[data-testid="stButton"] > button:first-child:hover {
+        transform: scale(1.03) !important;
+        box-shadow: 0 0 50px rgba(167,139,250,0.6) !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    if st.button("✦  Let's find my sound  →", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
 
