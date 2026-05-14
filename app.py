@@ -594,14 +594,14 @@ def generate_persona_card(persona):
     poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
     lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
-    f_brand = try_font(poppins_reg, 82)
-    f_tagline = try_font(poppins_reg, 22)
-    f_name = try_font(lora, 80)
-    f_name_s = try_font(lora, 78)
-    f_body = try_font(poppins_reg, 48)
-    f_traits = try_font(poppins_med, 28)
-    f_small = try_font(poppins_reg, 38)
-    f_tiny = try_font(poppins_reg, 22)
+    f_brand = try_font(poppins_reg, 52)
+    f_tagline = try_font(poppins_reg, 26)
+    f_name = try_font(lora, 90)
+    f_name_s = try_font(lora, 72)
+    f_body = try_font(poppins_reg, 33)
+    f_traits = try_font(poppins_med, 32)
+    f_small = try_font(poppins_reg, 32)
+    f_tiny = try_font(poppins_reg, 26)
 
     cx = W // 2
     WHITE = (255, 255, 255, 255)
@@ -616,7 +616,7 @@ def generate_persona_card(persona):
         card_traits.append(clean_text(t))
 
     # Brand mark
-    brand = "YOUR LIFE AS A PLAYLIST"
+    brand = "SoundPrint"
     tagline = "YOUR MUSIC TASTE HAS A SIGNATURE"
 
     brand_w = draw.textlength(brand, font=f_brand)
@@ -713,6 +713,9 @@ def generate_persona_card(persona):
     # Based-on note
     note_y = dna_y + 3 * bar_gap + 20
     if persona.artist_sources:
+        card_sources = []
+        for a in persona.artist_sources:
+            card_sources.append(clean_text(a))
         src = "Based on: " + ", ".join(card_sources)
         sw = draw.textlength(src, font=f_tiny)
         draw.text(((W - sw) // 2, note_y), src, fill=DIMMED, font=f_tiny)
@@ -1026,7 +1029,7 @@ elif st.session_state.step == "result":
 
     with st.expander("📸 Download your result card"):
         card_img = Image.open(io.BytesIO(st.session_state.card_bytes))
-        st.image(card_img, use_container_width=True)
+        st.image(card_img, use_container_width=True, caption="Tap download to save")
         st.download_button(
             label="⬇️ Download PNG",
             data=st.session_state.card_bytes,
