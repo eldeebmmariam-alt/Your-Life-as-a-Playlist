@@ -617,7 +617,7 @@ def generate_persona_card(persona):
 
     # ── HEADER ───────────────────────────────────────────────
     brand = "SoundPrint"
-    tagline = "TIME TO PULL YOUR PRINTS"
+    tagline = "TIME TO PULL YOUR PRINT"
     brand_w = draw.textlength(brand, font=f_brand)
     draw.text(((W - brand_w) // 2, 58), brand, fill=WHITE, font=f_brand)
     tagline_w = draw.textlength(tagline, font=f_tagline)
@@ -625,7 +625,19 @@ def generate_persona_card(persona):
     draw.line([(cx - 140, 180), (cx + 140, 180)], fill=(*accent, 120), width=2)
 
     # ── EMOJI + PERSONA NAME ──────────────────────────────────
-    emoji_img = render_emoji_img(persona.persona_id, target_size=110)
+    # Render emoji directly from NotoColorEmoji font (size 109 is the only valid size)
+    emoji_img = None
+    try:
+        noto_path = "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"
+        noto_font = ImageFont.truetype(noto_path, 109)
+        emoji_canvas = Image.new("RGBA", (250, 250), (0, 0, 0, 0))
+        emoji_draw = ImageDraw.Draw(emoji_canvas)
+        emoji_draw.text((10, 10), persona.emoji, font=noto_font, embedded_color=True)
+        bbox = emoji_canvas.getbbox()
+        if bbox and (bbox[2] - bbox[0]) > 4:
+            emoji_img = emoji_canvas.crop(bbox).resize((110, 110), Image.LANCZOS)
+    except Exception:
+        emoji_img = None
     y = 204
     if emoji_img:
         img.paste(emoji_img, ((W - emoji_img.width) // 2, y), emoji_img)
@@ -716,7 +728,7 @@ def generate_persona_card(persona):
         y += 36
 
     # ── FOOTER ────────────────────────────────────────────────
-    fy = H - pad - 38
+    fy = H - pad - 48
     draw.line([(cx - 110, fy), (cx + 110, fy)], fill=(255, 255, 255, 38), width=1)
     footer = "soundprint.streamlit.app"
     fw = draw.textlength(footer, font=f_tiny)
