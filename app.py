@@ -919,11 +919,13 @@ if st.session_state.step == "intro":
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("""
     <style>
-    div[data-testid="stButton"] > button:first-child {
+    div[data-testid="stButton"] > button:first-child,
+    div[data-testid="stButton"] > button:first-child p,
+    div[data-testid="stButton"] > button:first-child span {
         background: white !important;
         border: none !important;
         border-radius: 14px !important;
-        color: #1a1a3e !important;
+        color: #3b0764 !important;
         font-size: 1.15rem !important;
         font-weight: 800 !important;
         letter-spacing: 0.04em !important;
@@ -931,9 +933,10 @@ if st.session_state.step == "intro":
         box-shadow: 0 4px 28px rgba(255,255,255,0.18) !important;
         transition: all 0.25s ease !important;
         text-align: center !important;
+        -webkit-text-fill-color: #3b0764 !important;
     }
     div[data-testid="stButton"] > button:first-child:hover {
-        background: #f0f0ff !important;
+        background: #f5f0ff !important;
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 36px rgba(255,255,255,0.28) !important;
     }
