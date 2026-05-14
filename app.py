@@ -920,25 +920,27 @@ if st.session_state.step == "intro":
     st.markdown("""
     <style>
     div[data-testid="stButton"] > button:first-child {
-        background: linear-gradient(135deg, #a78bfa, #f472b6) !important;
-        border: none !important;
-        border-radius: 50px !important;
+        background: linear-gradient(135deg, #1a1a3e, #2d2d6e) !important;
+        border: 2px solid rgba(255,255,255,0.35) !important;
+        border-radius: 14px !important;
         color: white !important;
-        font-size: 1.15rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.05em !important;
+        font-size: 1.1rem !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.06em !important;
         padding: 1rem 2rem !important;
-        box-shadow: 0 0 30px rgba(167,139,250,0.4) !important;
-        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+        transition: all 0.25s ease !important;
         text-align: center !important;
     }
     div[data-testid="stButton"] > button:first-child:hover {
-        transform: scale(1.03) !important;
-        box-shadow: 0 0 50px rgba(167,139,250,0.6) !important;
+        background: linear-gradient(135deg, #252550, #363680) !important;
+        border-color: rgba(255,255,255,0.6) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
     }
     </style>
     """, unsafe_allow_html=True)
-    if st.button("✦  Let's find my sound  →", use_container_width=True):
+    if st.button("Let's find my sound  ⟶", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
 
