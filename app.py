@@ -812,7 +812,7 @@ def restart():
 
 
 # ── Page config ────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="YOUR LIFE AS A PLAYLIST", page_icon="🎵", layout="centered")
+st.set_page_config(page_title="SOUNDPRINT", page_icon="🎵", layout="centered")
 
 st.markdown("""
 <style>
@@ -889,8 +889,8 @@ data = get_data()
 
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Your Music Taste Has a Signature</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Pull Your Prints</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -946,13 +946,13 @@ if st.session_state.step == "intro":
     }
     </style>
     """, unsafe_allow_html=True)
-    if st.button("Let's find my sound  ⟶", use_container_width=True):
+    if st.button("Time to Pull Your Prints  ⟶", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
 
 # ── STEP 1: ARTISTS ────────────────────────────────────────────────────────────
 elif st.session_state.step == "artists":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="question-card">
@@ -996,7 +996,7 @@ elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
 
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="step-badge">Step 2 of 2 — Question ' + str(q_idx+1) + ' of ' + str(total) + '</div>',
         unsafe_allow_html=True
@@ -1035,7 +1035,7 @@ elif st.session_state.step == "quiz":
 
 # ── LOADING ────────────────────────────────────────────────────────────────────
 elif st.session_state.step == "loading":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
     messages = [
         ("🎧", "Analyzing your artists..."),
         ("✨", "Reading your playlist energy..."),
