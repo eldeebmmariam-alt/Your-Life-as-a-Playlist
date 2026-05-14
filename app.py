@@ -559,7 +559,7 @@ def generate_persona_card(persona):
         except Exception:
             return ImageFont.load_default()
 
-    W, H = 1080, 1400
+    W, H = 1080, 1080
     accent = hex_to_rgb(persona.color)
     bg_dark = (15, 12, 41)
     bg_mid = (48, 43, 99)
@@ -615,117 +615,112 @@ def generate_persona_card(persona):
     for t in persona.traits:
         card_traits.append(clean_text(t))
 
-    # Brand mark
+    # ── HEADER ───────────────────────────────────────────────
     brand = "SoundPrint"
-    tagline = "TIME TO PULL YOUR PRINT"
-
+    tagline = "YOUR MUSIC TASTE HAS A SIGNATURE"
     brand_w = draw.textlength(brand, font=f_brand)
-    draw.text(((W - brand_w) // 2, 70), brand, fill=WHITE, font=f_brand)
-
+    draw.text(((W - brand_w) // 2, 58), brand, fill=WHITE, font=f_brand)
     tagline_w = draw.textlength(tagline, font=f_tagline)
-    draw.text(((W - tagline_w) // 2, 155), tagline, fill=(*accent, 230), font=f_tagline)
+    draw.text(((W - tagline_w) // 2, 128), tagline, fill=(*accent, 210), font=f_tagline)
+    draw.line([(cx - 140, 180), (cx + 140, 180)], fill=(*accent, 120), width=2)
 
-    draw.line([(cx - 180, 220), (cx + 180, 220)], fill=(*accent, 180), width=3)
-
-    # Emoji image
-    emoji_img = render_emoji_img(persona.emoji, target_size=118)
-    emoji_y = 260
+    # ── EMOJI + PERSONA NAME ──────────────────────────────────
+    emoji_img = render_emoji_img(persona.persona_id, target_size=110)
+    y = 204
     if emoji_img:
-        ex = (W - emoji_img.width) // 2
-        img.paste(emoji_img, (ex, emoji_y), emoji_img)
-        name_y = emoji_y + emoji_img.height + 34
+        img.paste(emoji_img, ((W - emoji_img.width) // 2, y), emoji_img)
+        y += emoji_img.height + 14
     else:
-        name_y = emoji_y + 118
+        y += 24
 
-    # Persona name
     name_font = f_name
     nw = draw.textlength(card_name, font=name_font)
-    if nw > W - 160:
+    if nw > W - 100:
         name_font = f_name_s
         nw = draw.textlength(card_name, font=name_font)
-    draw.text(((W - nw) // 2, name_y), card_name, fill=(*accent, 255), font=name_font)
+    draw.text(((W - nw) // 2, y), card_name, fill=(*accent, 255), font=name_font)
 
-    # Description
-    desc_y = name_y + 90
-    desc_lines = wrap_text(draw, card_desc, f_body, W - 210)[:4]
+    # Name underline
+    name_h = name_font.getbbox(card_name)[3] if hasattr(name_font, "getbbox") else 80
+    y += name_h + 8
+    draw.line([(cx - 160, y), (cx + 160, y)], fill=(*accent, 80), width=1)
+    y += 22
+
+    # ── DESCRIPTION ──────────────────────────────────────────
+    desc_lines = wrap_text(draw, card_desc, f_body, W - 150)[:3]
     for line in desc_lines:
         lw = draw.textlength(line, font=f_body)
-        draw.text(((W - lw) // 2, desc_y), line, fill=MUTED, font=f_body)
-        desc_y += 44
+        draw.text(((W - lw) // 2, y), line, fill=MUTED, font=f_body)
+        y += 40
+    y += 16
 
-    # Anthem box
-    ay = desc_y + 36
-    box_h = 94
-    draw.rounded_rectangle(
-        [pad + 52, ay, W - pad - 52, ay + box_h],
-        radius=18,
-        fill=(*blend(accent, (0, 0, 0), 0.22), 255),
-        outline=(*accent, 95),
-        width=2
-    )
+    # ── ANTHEM BOX ───────────────────────────────────────────
+    box_h = 82
+    draw.rounded_rectangle([pad + 36, y, W - pad - 36, y + box_h],
+        radius=14, fill=(*blend(accent, (0,0,0), 0.28), 255),
+        outline=(*accent, 90), width=2)
     anthem_str = "Your anthem:  " + card_anthem
     aw = draw.textlength(anthem_str, font=f_small)
-    draw.text(((W - aw) // 2, ay + 32), anthem_str, fill=(*accent, 245), font=f_small)
+    # Shorten if too wide
+    if aw > W - 140:
+        anthem_str = "Anthem: " + card_anthem
+        aw = draw.textlength(anthem_str, font=f_small)
+    if aw > W - 140:
+        anthem_str = card_anthem
+        aw = draw.textlength(anthem_str, font=f_small)
+    draw.text(((W - aw) // 2, y + 26), anthem_str, fill=(*accent, 245), font=f_small)
+    y += box_h + 24
 
-    # Traits
-    ty = ay + box_h + 48
-    traits_str = "  -  ".join(card_traits)
+    # ── TRAITS ───────────────────────────────────────────────
+    traits_str = "  ·  ".join(card_traits)
     traits_font = f_traits
     tw = draw.textlength(traits_str, font=traits_font)
-    if tw > W - 160:
+    if tw > W - 100:
         traits_font = f_tiny
         tw = draw.textlength(traits_str, font=traits_font)
-    draw.text(((W - tw) // 2, ty), traits_str, fill=MUTED, font=traits_font)
+    draw.text(((W - tw) // 2, y), traits_str, fill=MUTED, font=traits_font)
+    y += 54
 
-    # DNA bars
-    dna_y = ty + 78
-    bar_x = pad + 92
-    bar_w = W - (pad + 92) * 2
-    bar_gap = 82
-    bar_h = 22
-
+    # ── DNA BARS ─────────────────────────────────────────────
+    bar_x = pad + 70
+    bar_w = W - (pad + 70) * 2
+    bar_gap = 70
+    bar_h = 18
     dna_items = [
-        ("Energy", persona.dna["energy"]),
+        ("Energy",       persona.dna["energy"]),
         ("Extroversion", persona.dna["extroversion"]),
         ("Emotionality", persona.dna["emotionality"]),
     ]
-
     for i, (label, val) in enumerate(dna_items):
-        yb = dna_y + i * bar_gap
+        yb = y + i * bar_gap
         draw.text((bar_x, yb), label, fill=DIMMED, font=f_tiny)
         pct = str(val) + "%"
         pw = draw.textlength(pct, font=f_tiny)
         draw.text((bar_x + bar_w - pw, yb), pct, fill=(*accent, 235), font=f_tiny)
+        ty2 = yb + 30
+        draw.rounded_rectangle([bar_x, ty2, bar_x + bar_w, ty2 + bar_h],
+            radius=9, fill=(255, 255, 255, 28))
+        fill_w = max(14, int(bar_w * val / 100))
+        draw.rounded_rectangle([bar_x, ty2, bar_x + fill_w, ty2 + bar_h],
+            radius=9, fill=(*accent, 255))
+    y += 3 * bar_gap + 14
 
-        track_y = yb + 34
-        draw.rounded_rectangle(
-            [bar_x, track_y, bar_x + bar_w, track_y + bar_h],
-            radius=10,
-            fill=(255, 255, 255, 35)
-        )
-        fill_w = max(16, int(bar_w * val / 100))
-        draw.rounded_rectangle(
-            [bar_x, track_y, bar_x + fill_w, track_y + bar_h],
-            radius=10,
-            fill=(*accent, 255)
-        )
-
-    # Based-on note
-    note_y = dna_y + 3 * bar_gap + 20
+    # ── BASED ON NOTE ─────────────────────────────────────────
     if persona.artist_sources:
         card_sources = []
         for a in persona.artist_sources:
             card_sources.append(clean_text(a))
         src = "Based on: " + ", ".join(card_sources)
         sw = draw.textlength(src, font=f_tiny)
-        draw.text(((W - sw) // 2, note_y), src, fill=DIMMED, font=f_tiny)
+        draw.text(((W - sw) // 2, y), src, fill=DIMMED, font=f_tiny)
+        y += 36
 
-    # Footer
-    fy = H - pad - 54
-    draw.line([(cx - 130, fy), (cx + 130, fy)], fill=(255, 255, 255, 45), width=2)
+    # ── FOOTER ────────────────────────────────────────────────
+    fy = H - pad - 38
+    draw.line([(cx - 110, fy), (cx + 110, fy)], fill=(255, 255, 255, 38), width=1)
     footer = "soundprint.streamlit.app"
     fw = draw.textlength(footer, font=f_tiny)
-    draw.text(((W - fw) // 2, fy + 18), footer, fill=DIMMED, font=f_tiny)
+    draw.text(((W - fw) // 2, fy + 14), footer, fill=DIMMED, font=f_tiny)
 
     buf = io.BytesIO()
     img.convert("RGB").save(buf, format="PNG", dpi=(144, 144))
@@ -780,7 +775,7 @@ def restart():
 
 
 # ── Page config ────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="SoundPrint", page_icon="🎵", layout="centered")
+st.set_page_config(page_title="YOUR LIFE AS A PLAYLIST", page_icon="🎵", layout="centered")
 
 st.markdown("""
 <style>
@@ -857,8 +852,8 @@ data = get_data()
 
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Your Music Taste Has a Print</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Your Music Taste Has a Signature</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -886,13 +881,13 @@ if st.session_state.step == "intro":
     </div>
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Time To Pull Your Print →", use_container_width=True):
+    if st.button("Let's find my sound →", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
 
 # ── STEP 1: ARTISTS ────────────────────────────────────────────────────────────
 elif st.session_state.step == "artists":
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="question-card">
@@ -936,7 +931,7 @@ elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
 
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="step-badge">Step 2 of 2 — Question ' + str(q_idx+1) + ' of ' + str(total) + '</div>',
         unsafe_allow_html=True
@@ -975,7 +970,7 @@ elif st.session_state.step == "quiz":
 
 # ── LOADING ────────────────────────────────────────────────────────────────────
 elif st.session_state.step == "loading":
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     messages = [
         ("🎧", "Analyzing your artists..."),
         ("✨", "Reading your playlist energy..."),
@@ -1029,7 +1024,9 @@ elif st.session_state.step == "result":
 
     with st.expander("📸 Download your result card"):
         card_img = Image.open(io.BytesIO(st.session_state.card_bytes))
-        st.image(card_img, use_container_width=True, caption="Tap download to save")
+        col_l, col_c, col_r = st.columns([1, 2, 1])
+        with col_c:
+            st.image(card_img, use_container_width=True)
         st.download_button(
             label="⬇️ Download PNG",
             data=st.session_state.card_bytes,
@@ -1074,7 +1071,7 @@ elif st.session_state.step == "result":
     # 4. Spotify playlist or song recommendations fallback
     playlist_id = PERSONA_PLAYLISTS.get(persona.persona_id)
     if playlist_id:
-        st.markdown('<div class="section-title">🎧 Your SoundPrint playlist</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">🎧 Your persona playlist</div>', unsafe_allow_html=True)
         st.markdown(
             '<p style="font-size:0.85rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">'
             'A curated Spotify playlist built for your music identity.</p>',
