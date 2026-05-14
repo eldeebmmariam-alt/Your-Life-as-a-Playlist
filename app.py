@@ -793,6 +793,19 @@ def dna_bar(label, value, color):
         '</div></div>'
     )
 
+def animated_dna_bar(label, value, color, cls):
+    return (
+        '<div class="' + cls + '" style="margin-bottom:0.9rem;">'
+        '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">'
+        '<span style="font-size:0.82rem;color:rgba(255,255,255,0.7);">' + label + '</span>'
+        '<span style="font-size:0.82rem;color:' + color + ';font-weight:600;">' + str(value) + '%</span>'
+        '</div>'
+        '<div style="background:rgba(255,255,255,0.1);border-radius:50px;height:8px;overflow:hidden;">'
+        '<div class="fill" style="width:' + str(value) + '%;background:linear-gradient(90deg,' + color + '88,' + color + ');height:100%;border-radius:50px;"></div>'
+        '</div></div>'
+    )
+
+
 def restart():
     for key in list(st.session_state.keys()):
         del st.session_state[key]
@@ -828,7 +841,7 @@ div[data-baseweb="input"] input::placeholder{color:rgba(26,26,46,0.4)!important;
 .loading-dot{width:10px;height:10px;border-radius:50%;background:rgba(167,139,250,0.8);animation:loadBounce 1.2s ease-in-out infinite;}
 .loading-dot:nth-child(2){animation-delay:0.2s;background:rgba(244,114,182,0.8);}
 .loading-dot:nth-child(3){animation-delay:0.4s;background:rgba(167,139,250,0.8);}
-@keyframes loadBounce{0%,80%,100%{transform:scale(0.7);opacity:0.5;}40%{transform:scale(1.2);opacity:1;}}
+@keyframes loadBounce{0%,80%,100%{transform:scale(0.7);opacity:0.5;}40%{transform:scale(1.2);opacity:1;}}@keyframes fadeSlideUp{from{opacity:0;transform:translateY(12px);}to{opacity:0.9;transform:translateY(0);}}
 .result-card{border-radius:24px;padding:2.5rem 2rem;text-align:center;margin:1rem 0;animation:resultReveal 0.6s ease forwards;}
 @keyframes resultReveal{from{opacity:0;transform:translateY(20px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
 .result-emoji{font-size:4.5rem;display:block;margin-bottom:0.5rem;}
@@ -881,11 +894,11 @@ if st.session_state.step == "intro":
 
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown('<div class="intro-stat"><div class="intro-stat-num">12</div><div class="intro-stat-label">possible personas</div></div>', unsafe_allow_html=True)
+        st.markdown('<div style="background:linear-gradient(135deg,#a78bfa22,#a78bfa11);border:1px solid #a78bfa66;border-radius:16px;padding:1.2rem;text-align:center;box-shadow:0 0 24px rgba(167,139,250,0.15);"><div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#a78bfa;">12</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.7);margin-top:4px;">possible personas</div></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="intro-stat"><div class="intro-stat-num">11</div><div class="intro-stat-label">quiz questions</div></div>', unsafe_allow_html=True)
+        st.markdown('<div style="background:linear-gradient(135deg,#f472b622,#f472b611);border:1px solid #f472b666;border-radius:16px;padding:1.2rem;text-align:center;box-shadow:0 0 24px rgba(244,114,182,0.15);"><div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#f472b6;">11</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.7);margin-top:4px;">quiz questions</div></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="intro-stat"><div class="intro-stat-num">1000+</div><div class="intro-stat-label">artists in our database</div></div>', unsafe_allow_html=True)
+        st.markdown('<div style="background:linear-gradient(135deg,#2dd4bf22,#2dd4bf11);border:1px solid #2dd4bf66;border-radius:16px;padding:1.2rem;text-align:center;box-shadow:0 0 24px rgba(45,212,191,0.15);"><div style="font-family:Playfair Display,serif;font-size:2rem;font-weight:700;color:#2dd4bf;">1000+</div><div style="font-size:0.8rem;color:rgba(255,255,255,0.7);margin-top:4px;">artists in our database</div></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("""
@@ -1033,13 +1046,13 @@ elif st.session_state.step == "loading":
     for emoji, msg in messages:
         placeholder.markdown(
             '<div class="loading-screen">'
-            '<div style="font-size:3.5rem;margin-bottom:1rem;">' + emoji + '</div>'
-            '<div class="loading-msg">' + msg + '</div>'
+            '<div style="font-size:3.5rem;margin-bottom:1rem;animation:loadBounce 0.6s ease;">' + emoji + '</div>'
+            '<div class="loading-msg" style="animation:fadeSlideUp 0.4s ease forwards;">' + msg + '</div>'
             '<div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>'
             '</div>',
             unsafe_allow_html=True
         )
-        time.sleep(0.9)
+        time.sleep(1.1)
     placeholder.empty()
     st.session_state.step = "result"
     st.rerun()
@@ -1103,11 +1116,22 @@ elif st.session_state.step == "result":
 
     # 2. Music DNA
     st.markdown('<div class="section-title">🧬 Your Music DNA</div>', unsafe_allow_html=True)
+    e_val  = persona.dna["energy"]
+    ex_val = persona.dna["extroversion"]
+    em_val = persona.dna["emotionality"]
     st.markdown(
+        '<style>'
+        '@keyframes fillBar{from{width:0%}to{width:' + str(e_val) + '%}}'
+        '@keyframes fillBar2{from{width:0%}to{width:' + str(ex_val) + '%}}'
+        '@keyframes fillBar3{from{width:0%}to{width:' + str(em_val) + '%}}'
+        '.bar1 .fill{animation:fillBar 1.2s cubic-bezier(0.4,0,0.2,1) 0.2s both;}'
+        '.bar2 .fill{animation:fillBar2 1.2s cubic-bezier(0.4,0,0.2,1) 0.4s both;}'
+        '.bar3 .fill{animation:fillBar3 1.2s cubic-bezier(0.4,0,0.2,1) 0.6s both;}'
+        '</style>'
         '<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:1.5rem;">'
-        + dna_bar("Energy", persona.dna["energy"], persona.color)
-        + dna_bar("Extroversion", persona.dna["extroversion"], persona.color)
-        + dna_bar("Emotionality", persona.dna["emotionality"], persona.color)
+        + animated_dna_bar("Energy",       e_val,  persona.color, "bar1")
+        + animated_dna_bar("Extroversion", ex_val, persona.color, "bar2")
+        + animated_dna_bar("Emotionality", em_val, persona.color, "bar3")
         + '</div>',
         unsafe_allow_html=True
     )
