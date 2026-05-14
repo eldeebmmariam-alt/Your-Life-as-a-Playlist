@@ -617,7 +617,7 @@ def generate_persona_card(persona):
 
     # ── HEADER ───────────────────────────────────────────────
     brand = "SoundPrint"
-    tagline = "TIME TO PULL YOUR PRINT"
+    tagline = "TIME TO PULL YOUR PRINTS"
     brand_w = draw.textlength(brand, font=f_brand)
     draw.text(((W - brand_w) // 2, 58), brand, fill=WHITE, font=f_brand)
     tagline_w = draw.textlength(tagline, font=f_tagline)
@@ -775,7 +775,7 @@ def restart():
 
 
 # ── Page config ────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="YOUR LIFE AS A PLAYLIST", page_icon="🎵", layout="centered")
+st.set_page_config(page_title="SoundPrint", page_icon="🎵", layout="centered")
 
 st.markdown("""
 <style>
@@ -852,8 +852,8 @@ data = get_data()
 
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Time to Pull Your Print</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Time to Pull Your Prints</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -887,7 +887,7 @@ if st.session_state.step == "intro":
 
 # ── STEP 1: ARTISTS ────────────────────────────────────────────────────────────
 elif st.session_state.step == "artists":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="question-card">
@@ -931,7 +931,7 @@ elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
 
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="step-badge">Step 2 of 2 — Question ' + str(q_idx+1) + ' of ' + str(total) + '</div>',
         unsafe_allow_html=True
@@ -970,7 +970,7 @@ elif st.session_state.step == "quiz":
 
 # ── LOADING ────────────────────────────────────────────────────────────────────
 elif st.session_state.step == "loading":
-    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</em></div>', unsafe_allow_html=True)
     messages = [
         ("🎧", "Analyzing your artists..."),
         ("✨", "Reading your playlist energy..."),
@@ -1023,18 +1023,18 @@ elif st.session_state.step == "result":
         st.session_state.card_persona = persona.persona_id
 
     with st.expander("📸 Download your result card"):
-        card_img = Image.open(io.BytesIO(st.session_state.card_bytes))
-        col_l, col_c, col_r = st.columns([1, 2, 1])
+        col_l, col_c, col_r = st.columns([0.5, 2, 0.5])
         with col_c:
+            card_img = Image.open(io.BytesIO(st.session_state.card_bytes))
             st.image(card_img, use_container_width=True)
-        st.download_button(
-            label="⬇️ Download PNG",
-            data=st.session_state.card_bytes,
-            file_name="my-music-persona-" + persona.persona_id + ".png",
-            mime="image/png",
-            use_container_width=True,
-            key="dl_top",
-        )
+            st.download_button(
+                label="⬇️ Download",
+                data=st.session_state.card_bytes,
+                file_name="my-music-persona-" + persona.persona_id + ".png",
+                mime="image/png",
+                use_container_width=True,
+                key="dl_top",
+            )
 
     # 1. Main result card
     st.markdown(
