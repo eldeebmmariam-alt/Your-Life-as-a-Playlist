@@ -920,23 +920,22 @@ if st.session_state.step == "intro":
     st.markdown("""
     <style>
     div[data-testid="stButton"] > button:first-child {
-        background: linear-gradient(135deg, #1a1a3e, #2d2d6e) !important;
-        border: 2px solid rgba(255,255,255,0.35) !important;
+        background: white !important;
+        border: none !important;
         border-radius: 14px !important;
-        color: white !important;
-        font-size: 1.1rem !important;
-        font-weight: 600 !important;
-        letter-spacing: 0.06em !important;
+        color: #1a1a3e !important;
+        font-size: 1.15rem !important;
+        font-weight: 800 !important;
+        letter-spacing: 0.04em !important;
         padding: 1rem 2rem !important;
-        box-shadow: 0 4px 24px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+        box-shadow: 0 4px 28px rgba(255,255,255,0.18) !important;
         transition: all 0.25s ease !important;
         text-align: center !important;
     }
     div[data-testid="stButton"] > button:first-child:hover {
-        background: linear-gradient(135deg, #252550, #363680) !important;
-        border-color: rgba(255,255,255,0.6) !important;
+        background: #f0f0ff !important;
         transform: translateY(-2px) !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important;
+        box-shadow: 0 8px 36px rgba(255,255,255,0.28) !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -1119,6 +1118,8 @@ elif st.session_state.step == "result":
         unsafe_allow_html=True
     )
 
+    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
+
     # 3. Artists you would vibe with
     st.markdown('<div class="section-title">🎤 Artists you would vibe with</div>', unsafe_allow_html=True)
     artists_html = ""
@@ -1126,6 +1127,10 @@ elif st.session_state.step == "result":
         artists_html += '<span class="artist-chip">♪ ' + a + '</span>'
     
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
+
+    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
+
+    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
 
     # 4. Spotify playlist or song recommendations fallback
     playlist_id = PERSONA_PLAYLISTS.get(persona.persona_id)
@@ -1194,6 +1199,27 @@ elif st.session_state.step == "result":
 
     # 5. Take it again
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("🔄 Take it again", use_container_width=True):
+    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
+
+    st.markdown("""
+    <style>
+    div[data-testid="stButton"]:last-child > button {
+        background: transparent !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        border-radius: 14px !important;
+        color: rgba(255,255,255,0.55) !important;
+        font-size: 0.9rem !important;
+        font-weight: 400 !important;
+        letter-spacing: 0.08em !important;
+    }
+    div[data-testid="stButton"]:last-child > button:hover {
+        border-color: rgba(255,255,255,0.5) !important;
+        color: rgba(255,255,255,0.85) !important;
+        background: rgba(255,255,255,0.04) !important;
+        transform: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    if st.button("↩  Take it again", use_container_width=True):
         restart()
         st.rerun()
