@@ -1145,9 +1145,6 @@ elif st.session_state.step == "result":
         artists_html += '<span class="artist-chip">♪ ' + a + '</span>'
     
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
-
-    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
-
     st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
 
     # 4. Spotify playlist or song recommendations fallback
