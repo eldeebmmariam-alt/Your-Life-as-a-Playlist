@@ -929,7 +929,7 @@ if st.session_state.step == "intro":
         font-size: 1.15rem !important;
         font-weight: 800 !important;
         letter-spacing: 0.04em !important;
-        padding: 1rem 2rem !important;
+        padding: 0.6rem 1.5rem !important;
         box-shadow: 0 4px 28px rgba(255,255,255,0.18) !important;
         transition: all 0.25s ease !important;
         text-align: center !important;
