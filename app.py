@@ -617,7 +617,7 @@ def generate_persona_card(persona):
 
     # ── HEADER ───────────────────────────────────────────────
     brand = "SoundPrint"
-    tagline = "YOUR MUSIC TASTE HAS A SIGNATURE"
+    tagline = "TIME TO PULL YOUR PRINT"
     brand_w = draw.textlength(brand, font=f_brand)
     draw.text(((W - brand_w) // 2, 58), brand, fill=WHITE, font=f_brand)
     tagline_w = draw.textlength(tagline, font=f_tagline)
@@ -853,7 +853,7 @@ data = get_data()
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
     st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
-    st.markdown('<div class="hero-sub">Your Music Taste Has a Signature</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-sub">Time to Pull Your Print</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
     with c1:
