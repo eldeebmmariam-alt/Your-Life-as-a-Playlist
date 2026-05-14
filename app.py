@@ -611,10 +611,12 @@ def generate_persona_card(persona):
     card_name = clean_text(persona.name)
     card_desc = clean_text(persona.description)
     card_anthem = clean_text(persona.anthem)
-    card_traits = [clean_text(t) for t in persona.traits]
+    card_traits = []
+    for t in persona.traits:
+        card_traits.append(clean_text(t))
 
     # Brand mark
-    brand = "SoundPrint"
+    brand = "YOUR LIFE AS A PLAYLIST"
     tagline = "YOUR MUSIC TASTE HAS A SIGNATURE"
 
     brand_w = draw.textlength(brand, font=f_brand)
@@ -711,7 +713,7 @@ def generate_persona_card(persona):
     # Based-on note
     note_y = dna_y + 3 * bar_gap + 20
     if persona.artist_sources:
-        src = "Based on: " + ", ".join([clean_text(a) for a in persona.artist_sources])
+        src = "Based on: " + ", ".join(card_sources)
         sw = draw.textlength(src, font=f_tiny)
         draw.text(((W - sw) // 2, note_y), src, fill=DIMMED, font=f_tiny)
 
@@ -775,7 +777,7 @@ def restart():
 
 
 # ── Page config ────────────────────────────────────────────────────────────────
-st.set_page_config(page_title="SoundPrint", page_icon="🎵", layout="centered")
+st.set_page_config(page_title="YOUR LIFE AS A PLAYLIST", page_icon="🎵", layout="centered")
 
 st.markdown("""
 <style>
@@ -852,7 +854,7 @@ data = get_data()
 
 # ── INTRO ──────────────────────────────────────────────────────────────────────
 if st.session_state.step == "intro":
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     st.markdown('<div class="hero-sub">Your Music Taste Has a Signature</div>', unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
@@ -881,13 +883,13 @@ if st.session_state.step == "intro":
     </div>
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Find my SoundPrint →", use_container_width=True):
+    if st.button("Let's find my sound →", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
 
 # ── STEP 1: ARTISTS ────────────────────────────────────────────────────────────
 elif st.session_state.step == "artists":
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     st.markdown('<div class="step-badge">Step 1 of 2 — Your top artists</div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="question-card">
@@ -902,7 +904,10 @@ elif st.session_state.step == "artists":
 
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("Next — Take the quiz →", use_container_width=True):
-        artists = [a for a in [artist1, artist2, artist3] if a.strip()]
+        artists = []
+        for a in [artist1, artist2, artist3]:
+            if a.strip():
+                artists.append(a)
         if not artists:
             st.warning("Please enter at least one artist.")
         else:
@@ -928,16 +933,22 @@ elif st.session_state.step == "quiz":
     q_idx = st.session_state.quiz_step
     total = len(QUIZ_QUESTIONS)
 
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     st.markdown(
         '<div class="step-badge">Step 2 of 2 — Question ' + str(q_idx+1) + ' of ' + str(total) + '</div>',
         unsafe_allow_html=True
     )
 
-    dots = "".join([
-        '<div class="dot ' + ("done" if i < q_idx else "active" if i == q_idx else "") + '"></div>'
-        for i in range(total)
-    ])
+    dots = ""
+    for i in range(total):
+        if i < q_idx:
+            dot_class = "done"
+        elif i == q_idx:
+            dot_class = "active"
+        else:
+            dot_class = ""
+        dots += '<div class="dot ' + dot_class + '"></div>'
+    dots = dots
     st.markdown('<div class="progress-dots">' + dots + '</div>', unsafe_allow_html=True)
     st.progress(q_idx / total)
 
@@ -961,7 +972,7 @@ elif st.session_state.step == "quiz":
 
 # ── LOADING ────────────────────────────────────────────────────────────────────
 elif st.session_state.step == "loading":
-    st.markdown('<div class="hero-title">🎵 SoundPrint 🎵</div>', unsafe_allow_html=True)
+    st.markdown('<div class="hero-title">🎵 Your Life<br><em>as a Playlist</em></div>', unsafe_allow_html=True)
     messages = [
         ("🎧", "Analyzing your artists..."),
         ("✨", "Reading your playlist energy..."),
@@ -998,7 +1009,10 @@ elif st.session_state.step == "result":
 
     render_persona_animation(persona.persona_id)
 
-    traits_html = "".join(['<span class="trait-pill">' + t + '</span>' for t in persona.traits])
+    traits_html = ""
+    for t in persona.traits:
+        traits_html += '<span class="trait-pill">' + t + '</span>'
+    
     artist_note = ""
     if persona.artist_sources:
         artist_note = '<p style="opacity:0.6;font-size:0.82rem;margin-top:1.2rem;">Based on: ' + ", ".join(persona.artist_sources) + ' — combined with your quiz answers.</p>'
@@ -1048,7 +1062,10 @@ elif st.session_state.step == "result":
 
     # 3. Artists you would vibe with
     st.markdown('<div class="section-title">🎤 Artists you would vibe with</div>', unsafe_allow_html=True)
-    artists_html = "".join(['<span class="artist-chip">♪ ' + a + '</span>' for a in persona.artists])
+    artists_html = ""
+    for a in persona.artists:
+        artists_html += '<span class="artist-chip">♪ ' + a + '</span>'
+    
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
 
     # 4. Spotify playlist or song recommendations fallback
