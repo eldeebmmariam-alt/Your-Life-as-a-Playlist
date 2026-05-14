@@ -1,4 +1,4 @@
-# Your Life as a Playlist
+# SoundPrint
 
 Your Life as a Playlist is an interactive Streamlit web app that uses a user's favorite artists and personality quiz answers to generate a personalized music persona.
 
