@@ -893,7 +893,7 @@ if st.session_state.step == "intro":
     </div>
     """, unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
-    if st.button("Let's find my sound →", use_container_width=True):
+    if st.button("Let's pull your prints →", use_container_width=True):
         st.session_state.step = "artists"
         st.rerun()
 
