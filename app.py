@@ -783,7 +783,7 @@ st.set_page_config(page_title="SOUNDPRINT", page_icon="🎵", layout="centered")
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600&display=swap');
-html,body,[class*="css"]{font-family:'Inter',sans-serif;}
+html,body,[class*="css"]{font-family:'Inter',sans-serif;background:#0f0c29;}
 .stApp{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;}
 h1,h2,h3{font-family:'Playfair Display',serif!important;color:white!important;}
 p,label,.stMarkdown{color:#e0e0e0!important;}
