@@ -650,7 +650,7 @@ def generate_persona_card(persona):
             emoji_img = emoji_img.resize((110, 110), Image.LANCZOS)
         except Exception:
             emoji_img = None
-    y = 204
+    y = 240
     if emoji_img:
         img.paste(emoji_img, ((W - emoji_img.width) // 2, y), emoji_img)
         y += emoji_img.height + 14
@@ -671,11 +671,11 @@ def generate_persona_card(persona):
     y += 22
 
     # ── DESCRIPTION ──────────────────────────────────────────
-    desc_lines = wrap_text(draw, card_desc, f_body, W - 150)[:4]
+    desc_lines = wrap_text(draw, card_desc, f_body, W - 320)[:4]
     for line in desc_lines:
         lw = draw.textlength(line, font=f_body)
         draw.text(((W - lw) // 2, y), line, fill=MUTED, font=f_body)
-        y += 40
+        y += 50
     y += 16
 
     # ── ANTHEM BOX ───────────────────────────────────────────
