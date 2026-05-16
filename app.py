@@ -616,7 +616,7 @@ def generate_persona_card(persona):
     f_name_s = try_font(lora, 72)
     f_body = try_font(poppins_reg, 38)
     f_traits = try_font(poppins_med, 40)
-    f_small = try_font(poppins_reg, 32)
+    f_small = try_font(poppins_reg, 52)
     f_tiny = try_font(poppins_reg, 32)
 
     cx = W // 2
@@ -679,7 +679,7 @@ def generate_persona_card(persona):
     y += 16
 
     # ── ANTHEM BOX ───────────────────────────────────────────
-    box_h = 82
+    box_h = f_small.getbbox("A")[3] + 48
     draw.rounded_rectangle([pad + 36, y, W - pad - 36, y + box_h],
         radius=14, fill=(*blend(accent, (0,0,0), 0.28), 255),
         outline=(*accent, 90), width=2)
