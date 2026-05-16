@@ -614,10 +614,10 @@ def generate_persona_card(persona):
     f_tagline = try_font(poppins_reg, 26)
     f_name = try_font(lora, 90)
     f_name_s = try_font(lora, 72)
-    f_body = try_font(poppins_reg, 33)
-    f_traits = try_font(poppins_med, 32)
+    f_body = try_font(poppins_reg, 38)
+    f_traits = try_font(poppins_med, 40)
     f_small = try_font(poppins_reg, 32)
-    f_tiny = try_font(poppins_reg, 26)
+    f_tiny = try_font(poppins_reg, 32)
 
     cx = W // 2
     WHITE = (255, 255, 255, 255)
@@ -671,7 +671,7 @@ def generate_persona_card(persona):
     y += 22
 
     # ── DESCRIPTION ──────────────────────────────────────────
-    desc_lines = wrap_text(draw, card_desc, f_body, W - 150)[:3]
+    desc_lines = wrap_text(draw, card_desc, f_body, W - 150)[:4]
     for line in desc_lines:
         lw = draw.textlength(line, font=f_body)
         draw.text(((W - lw) // 2, y), line, fill=MUTED, font=f_body)
@@ -704,30 +704,6 @@ def generate_persona_card(persona):
         tw = draw.textlength(traits_str, font=traits_font)
     draw.text(((W - tw) // 2, y), traits_str, fill=MUTED, font=traits_font)
     y += 54
-
-    # ── DNA BARS ─────────────────────────────────────────────
-    bar_x = pad + 70
-    bar_w = W - (pad + 70) * 2
-    bar_gap = 70
-    bar_h = 18
-    dna_items = [
-        ("Energy",       persona.dna["energy"]),
-        ("Extroversion", persona.dna["extroversion"]),
-        ("Emotionality", persona.dna["emotionality"]),
-    ]
-    for i, (label, val) in enumerate(dna_items):
-        yb = y + i * bar_gap
-        draw.text((bar_x, yb), label, fill=DIMMED, font=f_tiny)
-        pct = str(val) + "%"
-        pw = draw.textlength(pct, font=f_tiny)
-        draw.text((bar_x + bar_w - pw, yb), pct, fill=(*accent, 235), font=f_tiny)
-        ty2 = yb + 30
-        draw.rounded_rectangle([bar_x, ty2, bar_x + bar_w, ty2 + bar_h],
-            radius=9, fill=(255, 255, 255, 28))
-        fill_w = max(14, int(bar_w * val / 100))
-        draw.rounded_rectangle([bar_x, ty2, bar_x + fill_w, ty2 + bar_h],
-            radius=9, fill=(*accent, 255))
-    y += 3 * bar_gap + 14
 
     # ── FOOTER ────────────────────────────────────────────────
     fy = H - pad - 48
@@ -858,7 +834,7 @@ div[data-baseweb="input"] input::placeholder{color:rgba(26,26,46,0.4)!important;
 @keyframes nostalgiaFade{0%,100%{transform:scale(0.85) rotate(-5deg);opacity:0.04}50%{transform:scale(1.1) rotate(5deg);opacity:0.22}}
 @keyframes rebelCrash{0%{transform:translateY(0) rotate(0deg);opacity:0}6%{opacity:0.38}88%{opacity:0.2}100%{transform:translateY(110vh) rotate(180deg);opacity:0}}
 @keyframes trendRise{0%{transform:translateY(0) scale(0.7);opacity:0}10%{opacity:0.5}100%{transform:translateY(-115vh) scale(1.2);opacity:0}}
-footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{visibility:hidden;}
+footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{display:none;}.block-container{padding-top:3rem !important;}
 </style>
 """, unsafe_allow_html=True)
 
