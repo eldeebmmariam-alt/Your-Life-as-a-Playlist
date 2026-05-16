@@ -729,16 +729,6 @@ def generate_persona_card(persona):
             radius=9, fill=(*accent, 255))
     y += 3 * bar_gap + 14
 
-    # ── BASED ON NOTE ─────────────────────────────────────────
-    if persona.artist_sources:
-        card_sources = []
-        for a in persona.artist_sources:
-            card_sources.append(clean_text(a))
-        src = "Based on: " + ", ".join(card_sources)
-        sw = draw.textlength(src, font=f_tiny)
-        draw.text(((W - sw) // 2, y), src, fill=DIMMED, font=f_tiny)
-        y += 36
-
     # ── FOOTER ────────────────────────────────────────────────
     fy = H - pad - 48
     draw.line([(cx - 110, fy), (cx + 110, fy)], fill=(255, 255, 255, 38), width=1)
