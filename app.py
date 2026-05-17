@@ -576,7 +576,7 @@ def generate_persona_card(persona):
             st.write(f"Font failed: {path} — {e}")
             return ImageFont.load_default()
 
-    W, H = 1080, 1080
+    W, H = 1080, 1200
     accent = hex_to_rgb(persona.color)
     bg_dark = (15, 12, 41)
     bg_mid = (48, 43, 99)
@@ -676,7 +676,7 @@ def generate_persona_card(persona):
     for line in desc_lines:
         lw = draw.textlength(line, font=f_body)
         draw.text(((W - lw) // 2, y), line, fill=MUTED, font=f_body)
-        y += 40
+        y += 34
     y += 16
 
     # ── ANTHEM BOX ───────────────────────────────────────────
@@ -713,7 +713,7 @@ def generate_persona_card(persona):
     # ── DNA BARS ─────────────────────────────────────────────
     bar_x = pad + 70
     bar_w = W - (pad + 70) * 2
-    bar_gap = 70
+    bar_gap = 58
     bar_h = 18
     dna_items = [
         ("Energy",       persona.dna["energy"]),
