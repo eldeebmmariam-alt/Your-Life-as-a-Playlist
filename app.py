@@ -617,7 +617,7 @@ def generate_persona_card(persona):
     f_name_s = try_font(lora, 58)
     f_body = try_font(poppins_reg, 28)
     f_traits = try_font(poppins_med, 26)
-    f_small = try_font(poppins_reg, 32)
+    f_small = try_font(poppins_reg, 26)
     f_tiny = try_font(poppins_reg, 22)
 
     cx = W // 2
@@ -636,7 +636,7 @@ def generate_persona_card(persona):
     brand = "SoundPrint"
     tagline = "TIME TO PULL YOUR PRINT"
     brand_w = draw.textlength(brand, font=f_brand)
-    draw.text(((W - brand_w) // 2, 58), brand, fill=WHITE, font=f_brand)
+    draw.text(((W - brand_w) // 2, 80), brand, fill=WHITE, font=f_brand)
     tagline_w = draw.textlength(tagline, font=f_tagline)
     draw.text(((W - tagline_w) // 2, 128), tagline, fill=(*accent, 210), font=f_tagline)
     draw.line([(cx - 140, 180), (cx + 140, 180)], fill=(*accent, 120), width=2)
@@ -733,16 +733,6 @@ def generate_persona_card(persona):
         draw.rounded_rectangle([bar_x, ty2, bar_x + fill_w, ty2 + bar_h],
             radius=9, fill=(*accent, 255))
     y += 3 * bar_gap + 14
-
-    # ── BASED ON NOTE ─────────────────────────────────────────
-    if persona.artist_sources:
-        card_sources = []
-        for a in persona.artist_sources:
-            card_sources.append(clean_text(a))
-        src = "Based on: " + ", ".join(card_sources)
-        sw = draw.textlength(src, font=f_tiny)
-        draw.text(((W - sw) // 2, y), src, fill=DIMMED, font=f_tiny)
-        y += 36
 
     # ── FOOTER ────────────────────────────────────────────────
     fy = H - pad - 48
