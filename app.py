@@ -611,13 +611,13 @@ def generate_persona_card(persona):
     lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
     f_brand = try_font(poppins_reg, 52)
-    f_tagline = try_font(poppins_reg, 40)
-    f_name = try_font(lora, 120)
-    f_name_s = try_font(lora, 93)
-    f_body = try_font(poppins_reg, 38)
-    f_traits = try_font(poppins_med, 40)
-    f_small = try_font(poppins_reg, 73)
-    f_tiny = try_font(poppins_reg, 32)
+    f_tagline = try_font(poppins_reg, 26)
+    f_name = try_font(lora, 90)
+    f_name_s = try_font(lora, 72)
+    f_body = try_font(poppins_reg, 33)
+    f_traits = try_font(poppins_med, 32)
+    f_small = try_font(poppins_reg, 32)
+    f_tiny = try_font(poppins_reg, 26)
 
     cx = W // 2
     WHITE = (255, 255, 255, 255)
@@ -650,7 +650,7 @@ def generate_persona_card(persona):
             emoji_img = emoji_img.resize((110, 110), Image.LANCZOS)
         except Exception:
             emoji_img = None
-    y = 240
+    y = 204
     if emoji_img:
         img.paste(emoji_img, ((W - emoji_img.width) // 2, y), emoji_img)
         y += emoji_img.height + 14
@@ -671,15 +671,15 @@ def generate_persona_card(persona):
     y += 22
 
     # ── DESCRIPTION ──────────────────────────────────────────
-    desc_lines = wrap_text(draw, card_desc, f_body, W - 320)[:4]
+    desc_lines = wrap_text(draw, card_desc, f_body, W - 150)[:3]
     for line in desc_lines:
         lw = draw.textlength(line, font=f_body)
         draw.text(((W - lw) // 2, y), line, fill=MUTED, font=f_body)
-        y += 50
+        y += 40
     y += 16
 
     # ── ANTHEM BOX ───────────────────────────────────────────
-    box_h = f_small.getbbox("A")[3] + 48
+    box_h = 82
     draw.rounded_rectangle([pad + 36, y, W - pad - 36, y + box_h],
         radius=14, fill=(*blend(accent, (0,0,0), 0.28), 255),
         outline=(*accent, 90), width=2)
@@ -704,6 +704,40 @@ def generate_persona_card(persona):
         tw = draw.textlength(traits_str, font=traits_font)
     draw.text(((W - tw) // 2, y), traits_str, fill=MUTED, font=traits_font)
     y += 54
+
+    # ── DNA BARS ─────────────────────────────────────────────
+    bar_x = pad + 70
+    bar_w = W - (pad + 70) * 2
+    bar_gap = 70
+    bar_h = 18
+    dna_items = [
+        ("Energy",       persona.dna["energy"]),
+        ("Extroversion", persona.dna["extroversion"]),
+        ("Emotionality", persona.dna["emotionality"]),
+    ]
+    for i, (label, val) in enumerate(dna_items):
+        yb = y + i * bar_gap
+        draw.text((bar_x, yb), label, fill=DIMMED, font=f_tiny)
+        pct = str(val) + "%"
+        pw = draw.textlength(pct, font=f_tiny)
+        draw.text((bar_x + bar_w - pw, yb), pct, fill=(*accent, 235), font=f_tiny)
+        ty2 = yb + 30
+        draw.rounded_rectangle([bar_x, ty2, bar_x + bar_w, ty2 + bar_h],
+            radius=9, fill=(255, 255, 255, 28))
+        fill_w = max(14, int(bar_w * val / 100))
+        draw.rounded_rectangle([bar_x, ty2, bar_x + fill_w, ty2 + bar_h],
+            radius=9, fill=(*accent, 255))
+    y += 3 * bar_gap + 14
+
+    # ── BASED ON NOTE ─────────────────────────────────────────
+    if persona.artist_sources:
+        card_sources = []
+        for a in persona.artist_sources:
+            card_sources.append(clean_text(a))
+        src = "Based on: " + ", ".join(card_sources)
+        sw = draw.textlength(src, font=f_tiny)
+        draw.text(((W - sw) // 2, y), src, fill=DIMMED, font=f_tiny)
+        y += 36
 
     # ── FOOTER ────────────────────────────────────────────────
     fy = H - pad - 48
@@ -783,7 +817,7 @@ st.set_page_config(page_title="SOUNDPRINT", page_icon="🎵", layout="centered")
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@400;500;600&display=swap');
-html,body,[class*="css"]{font-family:'Inter',sans-serif;background:#0f0c29;}
+html,body,[class*="css"]{font-family:'Inter',sans-serif;}
 .stApp{background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;}
 h1,h2,h3{font-family:'Playfair Display',serif!important;color:white!important;}
 p,label,.stMarkdown{color:#e0e0e0!important;}
@@ -834,7 +868,7 @@ div[data-baseweb="input"] input::placeholder{color:rgba(26,26,46,0.4)!important;
 @keyframes nostalgiaFade{0%,100%{transform:scale(0.85) rotate(-5deg);opacity:0.04}50%{transform:scale(1.1) rotate(5deg);opacity:0.22}}
 @keyframes rebelCrash{0%{transform:translateY(0) rotate(0deg);opacity:0}6%{opacity:0.38}88%{opacity:0.2}100%{transform:translateY(110vh) rotate(180deg);opacity:0}}
 @keyframes trendRise{0%{transform:translateY(0) scale(0.7);opacity:0}10%{opacity:0.5}100%{transform:translateY(-115vh) scale(1.2);opacity:0}}
-footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{display:hidden;}.block-container{padding-top:3rem !important;}
+footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{visibility:hidden;}
 </style>
 """, unsafe_allow_html=True)
 
