@@ -572,7 +572,8 @@ def generate_persona_card(persona):
     def try_font(path, size):
         try:
             return ImageFont.truetype(path, size)
-        except Exception:
+        except Exceptionas as e:
+            st.write(f"Font failed: {path} — {e}")
             return ImageFont.load_default()
 
     W, H = 1080, 1080
