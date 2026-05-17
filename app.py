@@ -606,10 +606,10 @@ def generate_persona_card(persona):
     draw.rounded_rectangle([pad, pad, W - pad, pad + 8], radius=4, fill=(*accent, 255))
 
     # Fonts
-    poppins = "/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf"
-    poppins_reg = "/usr/share/fonts/truetype/google-fonts/Poppins-Regular.ttf"
-    poppins_med = "/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf"
-    lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
+    poppins = "Poppins-Bold.ttf"
+    poppins_reg = "Poppins-Regular.ttf"
+    poppins_med = "Poppins-Medium.ttf"
+    lora = "Lora-VariableFont_wght.ttf"
 
     f_brand = try_font(poppins_reg, 52)
     f_tagline = try_font(poppins_reg, 40)
