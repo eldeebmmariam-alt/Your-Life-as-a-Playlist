@@ -611,14 +611,14 @@ def generate_persona_card(persona):
     poppins_med = "Poppins-Medium.ttf"
     lora = "Lora-VariableFont_wght.ttf"
 
-    f_brand = try_font(poppins_reg, 52)
-    f_tagline = try_font(poppins_reg, 40)
-    f_name = try_font(lora, 115)
-    f_name_s = try_font(lora, 93)
-    f_body = try_font(poppins_reg, 33)
-    f_traits = try_font(poppins_med, 32)
-    f_small = try_font(poppins_reg, 52)
-    f_tiny = try_font(poppins_reg, 26)
+    f_brand = try_font(poppins_reg, 36)
+    f_tagline = try_font(poppins_reg, 22)
+    f_name = try_font(lora, 75)
+    f_name_s = try_font(lora, 58)
+    f_body = try_font(poppins_reg, 28)
+    f_traits = try_font(poppins_med, 26)
+    f_small = try_font(poppins_reg, 32)
+    f_tiny = try_font(poppins_reg, 22)
 
     cx = W // 2
     WHITE = (255, 255, 255, 255)
@@ -672,7 +672,7 @@ def generate_persona_card(persona):
     y += 22
 
     # ── DESCRIPTION ──────────────────────────────────────────
-    desc_lines = wrap_text(draw, card_desc, f_body, W - 320)[:4]
+    desc_lines = wrap_text(draw, card_desc, f_body, W - 200)[:5]
     for line in desc_lines:
         lw = draw.textlength(line, font=f_body)
         draw.text(((W - lw) // 2, y), line, fill=MUTED, font=f_body)
