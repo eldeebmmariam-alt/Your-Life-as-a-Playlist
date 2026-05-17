@@ -611,12 +611,12 @@ def generate_persona_card(persona):
     lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
     f_brand = try_font(poppins_reg, 52)
-    f_tagline = try_font(poppins_reg, 26)
-    f_name = try_font(lora, 90)
-    f_name_s = try_font(lora, 72)
+    f_tagline = try_font(poppins_reg, 40)
+    f_name = try_font(lora, 120)
+    f_name_s = try_font(lora, 93)
     f_body = try_font(poppins_reg, 38)
     f_traits = try_font(poppins_med, 40)
-    f_small = try_font(poppins_reg, 52)
+    f_small = try_font(poppins_reg, 73)
     f_tiny = try_font(poppins_reg, 32)
 
     cx = W // 2
@@ -834,7 +834,7 @@ div[data-baseweb="input"] input::placeholder{color:rgba(26,26,46,0.4)!important;
 @keyframes nostalgiaFade{0%,100%{transform:scale(0.85) rotate(-5deg);opacity:0.04}50%{transform:scale(1.1) rotate(5deg);opacity:0.22}}
 @keyframes rebelCrash{0%{transform:translateY(0) rotate(0deg);opacity:0}6%{opacity:0.38}88%{opacity:0.2}100%{transform:translateY(110vh) rotate(180deg);opacity:0}}
 @keyframes trendRise{0%{transform:translateY(0) scale(0.7);opacity:0}10%{opacity:0.5}100%{transform:translateY(-115vh) scale(1.2);opacity:0}}
-footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{display:none;}.block-container{padding-top:3rem !important;}
+footer{visibility:hidden;}#MainMenu{visibility:hidden;}header{display:hidden;}.block-container{padding-top:3rem !important;}
 </style>
 """, unsafe_allow_html=True)
 
