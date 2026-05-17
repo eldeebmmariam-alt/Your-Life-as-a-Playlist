@@ -705,6 +705,10 @@ def generate_persona_card(persona):
     draw.text(((W - tw) // 2, y), traits_str, fill=MUTED, font=traits_font)
     y += 54
 
+    dna_label = "My Music DNA"
+    dlw = draw.textlength(dna_label, font=f_tiny)
+    draw.text(((W - dlw) // 2, y), dna_label, fill=DIMMED, font=f_tiny)
+    y += 44
     # ── DNA BARS ─────────────────────────────────────────────
     bar_x = pad + 70
     bar_w = W - (pad + 70) * 2
@@ -1136,7 +1140,7 @@ elif st.session_state.step == "result":
         unsafe_allow_html=True
     )
 
-    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:0.5rem 0;"></div>', unsafe_allow_html=True)
 
     # 3. Artists you would vibe with
     st.markdown('<div class="section-title">🎤 Artists you would vibe with</div>', unsafe_allow_html=True)
@@ -1145,7 +1149,7 @@ elif st.session_state.step == "result":
         artists_html += '<span class="artist-chip">♪ ' + a + '</span>'
     
     st.markdown('<div style="text-align:center;">' + artists_html + '</div>', unsafe_allow_html=True)
-    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:0.5rem 0;"></div>', unsafe_allow_html=True)
 
     # 4. Spotify playlist or song recommendations fallback
     playlist_id = PERSONA_PLAYLISTS.get(persona.persona_id)
@@ -1214,7 +1218,7 @@ elif st.session_state.step == "result":
 
     # 5. Take it again
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:1.5rem 0;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.12),transparent);margin:0.5rem 0;"></div>', unsafe_allow_html=True)
 
     st.markdown("""
     <style>
