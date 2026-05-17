@@ -611,12 +611,12 @@ def generate_persona_card(persona):
     lora = "/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf"
 
     f_brand = try_font(poppins_reg, 52)
-    f_tagline = try_font(poppins_reg, 26)
-    f_name = try_font(lora, 90)
-    f_name_s = try_font(lora, 72)
+    f_tagline = try_font(poppins_reg, 40)
+    f_name = try_font(lora, 115)
+    f_name_s = try_font(lora, 93)
     f_body = try_font(poppins_reg, 33)
     f_traits = try_font(poppins_med, 32)
-    f_small = try_font(poppins_reg, 32)
+    f_small = try_font(poppins_reg, 52)
     f_tiny = try_font(poppins_reg, 26)
 
     cx = W // 2
@@ -650,7 +650,7 @@ def generate_persona_card(persona):
             emoji_img = emoji_img.resize((110, 110), Image.LANCZOS)
         except Exception:
             emoji_img = None
-    y = 204
+    y = 240
     if emoji_img:
         img.paste(emoji_img, ((W - emoji_img.width) // 2, y), emoji_img)
         y += emoji_img.height + 14
@@ -671,7 +671,7 @@ def generate_persona_card(persona):
     y += 22
 
     # ── DESCRIPTION ──────────────────────────────────────────
-    desc_lines = wrap_text(draw, card_desc, f_body, W - 150)[:3]
+    desc_lines = wrap_text(draw, card_desc, f_body, W - 320)[:4]
     for line in desc_lines:
         lw = draw.textlength(line, font=f_body)
         draw.text(((W - lw) // 2, y), line, fill=MUTED, font=f_body)
@@ -679,7 +679,7 @@ def generate_persona_card(persona):
     y += 16
 
     # ── ANTHEM BOX ───────────────────────────────────────────
-    box_h = 82
+    box_h = f_small.getbbox("A")[3] + 48
     draw.rounded_rectangle([pad + 36, y, W - pad - 36, y + box_h],
         radius=14, fill=(*blend(accent, (0,0,0), 0.28), 255),
         outline=(*accent, 90), width=2)
