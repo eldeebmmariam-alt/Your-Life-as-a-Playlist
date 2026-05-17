@@ -1,11 +1,12 @@
 # SoundPrint
 
-Your Life as a Playlist is an interactive Streamlit web app that uses a user's favorite artists and personality quiz answers to generate a personalized music persona.
+SoundPrint is an interactive Streamlit web app that uses a user's favorite artists and personality quiz answers to generate a personalized music persona.
+Live app: https://soundprint.streamlit.app
 
 ## Features
 
 - Enter up to three favorite artists
-- Take a seven-question music personality quiz
+- Take an eleven-question music personality quiz
 - Receive a personalized result with:
   - Persona name
   - Emoji
